@@ -15,23 +15,21 @@ install_dependencies () {
         if [ "$line" = "y" ]
           then
             echo "Installing SystemC (or just setting the SYSTEMC_HOME variable for installation)"
-            if [ ! -d systemc-2.3.1 ] 
+            if [ ! -d systemc-2.3.4 ] 
               then
-                wget http://accellera.org/images/downloads/standards/systemc/systemc-2.3.1.tgz
-                mv systemc-2.3.1.tgz systemc-2.3.1.tar
-                tar xvf systemc-2.3.1.tar
-                cd systemc-2.3.1
-                mkdir objdir
-                cd objdir
-                ../configure
-                make
-                make install
-                cd ../..
+                wget https://github.com/accellera-official/systemc/archive/refs/tags/2.3.4.tar.gz
+                tar xvzf 2.3.4.tar.gz systemc-2.3.4
+                cd systemc-2.3.4
+                cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=`pwd` -DCMAKE_CXX_STANDARD=11 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=OFF .
+                make -j $NUM_THREADS
+                make install -j $NUM_THREADS
+                cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=`pwd` -DCMAKE_CXX_STANDARD=11 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=ON .
+                make -j $NUM_THREADS
+                make install -j $NUM_THREADS
+                cd ..
             fi
-            cd systemc-2.3.1
-            export SYSTEMC_HOME=`pwd`
-	    echo "SYSTEMC_HOME set to $SYSTEMC_HOME"
-            cd ..
+            export SYSTEMC_HOME=`pwd`/systemc-2.3.4
+      	    echo "SYSTEMC_HOME set to $SYSTEMC_HOME"
           else
             exit 1
         fi
@@ -46,42 +44,47 @@ install_dependencies () {
       cd crave
       if [ ! -d build ]
       then
-	  echo "Installing CRAVE."
-	  export GLOG_ROOT=/do/not/use
-	  export CRAVE_SOLVERS='cudd z3'
-	  echo "Build CRAVE using $NUM_THREADS thread(s)"
-	  make -j $NUM_THREADS
-	  make install -j $NUM_THREADS     
-	  cd ..
+    	  echo "Installing CRAVE."
+	      export GLOG_ROOT=/do/not/use
+	      export CRAVE_SOLVERS='cudd z3'
+	      echo "Build CRAVE using $NUM_THREADS thread(s)"
+	      make -j $NUM_THREADS
+	      make install -j $NUM_THREADS     
       else
-	  echo "CRAVE already installed."
+	      echo "CRAVE already installed."
       fi
+      cd ..
   else
       echo "CRAVE not found"
   fi
   
-  #uvm-systemc
-  echo -n "uvm-systemc-1.0-beta2: "
-    if [ ! -d ../include ] && [ -z "$UVM_SYSTEMC_HOME" ] 
+  echo -n "uvm-systemc-1.0-beta4: "
+  if [ ! -d uvm-systemc-1.0-beta4 ] && [ -z "$UVM_SYSTEMC_HOME" ] 
     then
       echo "install"
-      cd ..
+      wget https://www.accellera.org/images/downloads/standards/systemc/uvm-systemc-1.0-beta4.tar.gz
+      tar xvzf uvm-systemc-1.0-beta4.tar.gz 
+      cd uvm-systemc-1.0-beta4
       export CXXFLAGS=-std=c++11
-      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SYSTEMC_HOME/lib-linux64:$SYSTEMC_HOME/lib-linux
+      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SYSTEMC_HOME/lib-linux64:$SYSTEMC_HOME/lib-linux:$SYSTEMC_HOME/lib64
       config/bootstrap
-      mkdir objdir
+      mkdir -p objdir
       cd objdir
-      ../configure --enable-debug
+      ../configure --enable-debug --with-layout=unix --with-arch-suffix=64
       echo "Build UVM-SystemC using $NUM_THREADS thread(s)"
       make -j $NUM_THREADS
       make install -j $NUM_THREADS
-     # export UVM_SYSTEMC_HOME=`pwd`
-     # echo "UVM_SYSTEMC_HOME set to $UVM_SYSTEMC_HOME"
       cd ..
-      #rm -rf objdir
-      cd crave
+      rm -rf objdir
+      export UVM_SYSTEMC_HOME=`pwd`
+      echo "UVM_SYSTEMC_HOME set to $UVM_SYSTEMC_HOME"
+      cd ..
   else
-      echo "found UVM-SystemC"
+      if [ -z "$UVM_SYSTEMC_HOME" ] 
+      then
+        export UVM_SYSTEMC_HOME=`pwd`/uvm-systemc-1.0-beta4
+      fi
+      echo "found. UVM_SYSTEMC_HOME set to: $UVM_SYSTEMC_HOME"
   fi  
 }
 
