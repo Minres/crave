@@ -26,8 +26,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-find_package(SystemC REQUIRED)
-if(NOT SystemC_FOUND)
+# Set the path to SystemC if provided through the SYSTEMC_HOME environment variable
+if(DEFINED ENV{SYSTEMC_HOME})
+    set(SystemCLanguage_ROOT $ENV{SYSTEMC_HOME})
+endif()
+find_package(SystemCLanguage REQUIRED)
+if(NOT SystemCLanguage_FOUND)
     message(FATAL_ERROR "SystemC not found. Please provide the path to SystemC.")
 endif()
 
@@ -37,11 +41,13 @@ if(NOT CRAVE_FOUND)
 endif()
 
 find_package(UVM-SystemC REQUIRED)
-if(NOT UVM-SystemC_FOUND)
+if(NOT UVM_SystemC_FOUND)
     message(FATAL_ERROR "UVM-SystemC not found. Please provide the path to UVM-SystemC.")
 endif()
 
-# CRAVE2UVM
+##################################################################################################
+### CRAVE2UVM
+##################################################################################################
 add_library(crave2uvm INTERFACE)
 target_include_directories(crave2uvm INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
@@ -53,12 +59,12 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Default installation directory" FORCE)
 endif()
 
-install(TARGETS crave2uvm 
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/crave2uvm
-    COMPONENT lib
+include(GNUInstallDirs)
+install(TARGETS crave2uvm EXPORT crave2uvm-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/crave2uvm
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/include/
@@ -66,10 +72,29 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/include/
     FILES_MATCHING PATTERN "*.h"
 )
 
-export(TARGETS crave2uvm
-  NAMESPACE crave2uvm::
-  FILE ${CMAKE_INSTALL_PREFIX}/Findcrave2uvm.cmake
+set(CRAVE2UVM_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/crave2uvm)
+include(CMakePackageConfigHelpers)
+
+install(EXPORT crave2uvm-targets
+    DESTINATION ${CRAVE2UVM_CMAKE_CONFIG_DIR}
 )
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/crave2uvm-config-version.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/crave2uvm-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/crave2uvm-config.cmake
+    INSTALL_DESTINATION ${CRAVE2UVM_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/crave2uvm-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/crave2uvm-config-version.cmake
+    DESTINATION ${CRAVE2UVM_CMAKE_CONFIG_DIR})
 
 # Add examples directory
 add_subdirectory(examples)
