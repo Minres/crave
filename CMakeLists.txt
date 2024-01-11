@@ -17,7 +17,7 @@
 #
 ###############################################################################
 
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 project(crave2uvm VERSION 1.0 LANGUAGES CXX)
 
 # Set C++ standard
@@ -86,7 +86,7 @@ write_basic_package_version_file(
 )
 
 configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/crave2uvm-config.cmake.in
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/crave2uvm-config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/crave2uvm-config.cmake
     INSTALL_DESTINATION ${CRAVE2UVM_CMAKE_CONFIG_DIR}
 )

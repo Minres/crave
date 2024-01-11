@@ -26,8 +26,8 @@
 
 add_subdirectory(lib)
 
-install(DIRECTORY crave
-  DESTINATION include
-  FILES_MATCHING PATTERN "*.h*"
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/crave
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    FILES_MATCHING PATTERN "*.hpp"
 )
 

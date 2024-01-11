@@ -23,8 +23,8 @@
 ##########################################################################################
 
 
-PROJECT(metaSMT)
-cmake_minimum_required(VERSION 2.8.9)
+PROJECT(metaSMT VERSION 4.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.20)
 
 option(metaSMT_REQUIRE_CXX11 "make C++11 a requirement" on)
 
@@ -72,14 +72,14 @@ else()
   set(metaSMT_REQUIRE_RTTI false)
 endif()
 
-set_package_info(Boost "Portable C++ libraries")
+SET_PACKAGE_PROPERTIES(BOOST PROPERTIES DESCRIPTION "Portable C++ libraries" URL "http://www.boost.org/" TYPE REQUIRED PURPOSE "Boost provides free peer-reviewed portable C++ source libraries.")
+
 include_directories(${Boost_INCLUDE_DIRS})
 
 list(INSERT CMAKE_PREFIX_PATH 0 "${CMAKE_SOURCE_DIR}/cmake")
 
 # Set the default version number, but try to calculate
 # a proper version from git.
-SET(metaSMT_VERSION 4)
 include(cmake/get_git_version.cmake)
 
 include(cmake/build_type.cmake)
@@ -133,28 +133,28 @@ if(metaSMT_USE_Boolector)
 else()
   set(Boolector_FOUND 0)
 endif()
-set_package_info(Boolector "solver for SMT QF_BV and Arrays")
+SET_PACKAGE_PROPERTIES(Boolector PROPERTIES DESCRIPTION "solver for SMT QF_BV and Arrays")
 
 if (metaSMT_USE_Z3)
   find_package(Z3 QUIET)
 else()
   set(Z3_FOUND 0)
 endif()
-set_package_info(Z3 "solver for various SMT theories")
+SET_PACKAGE_PROPERTIES(Z3 PROPERTIES DESCRIPTION "solver for various SMT theories")
 
 if (metaSMT_USE_YICES2)
   find_package(YICES2 QUIET)
 else()
   set(YICES2_FOUND 0)
 endif()
-set_package_info(YICES2 "solver for various SMT theories")
+SET_PACKAGE_PROPERTIES(YICES2 PROPERTIES DESCRIPTION "solver for various SMT theories")
 
 if(metaSMT_USE_STP)
   find_package(STP QUIET)
 else()
   set(STP_FOUND 0)
 endif()
-set_package_info(STP "solver for SMT QF_BV and Arrays")
+SET_PACKAGE_PROPERTIES(STP PROPERTIES DESCRIPTION "solver for various SMT theories")
 
 if(metaSMT_USE_CVC4)
   find_package(CVC4 QUIET)
@@ -168,7 +168,6 @@ if (metaSMT_USE_CUDD)
 else ()
   set(CUDD_FOUND 0)
 endif ()
-set_package_info(CUDD "binary decision diagrams")
 
 if (metaSMT_USE_Aiger)
   find_package(Aiger QUIET) 
@@ -176,27 +175,22 @@ if (metaSMT_USE_Aiger)
 else ()
   set(Aiger_FOUND 0)
 endif()
-set_package_info(Aiger "And Inverter Graph libraries")
 
 if (metaSMT_USE_MiniSat)
   find_package(MiniSat QUIET)
 else ()
   set(MiniSat_FOUND 0)
 endif ()
-set_package_info(MiniSat "SAT solver MiniSAT")
 
 if (metaSMT_USE_picosat )
   find_package (PicoSAT QUIET)
 endif()
-set_package_info(PicoSat "SAT solver PicoSat")
 
 if( metaSMT_USE_lingeling )
   find_package( Lingeling QUIET)
 endif()
-set_package_info(Lingeling "SAT solver lingeling")
 
 find_package(GMP QUIET)
-set_package_info(GMP "optional, required by some backends")
 if(NOT GMP_FOUND)
   find_library(GMP_LIBRARIES gmp PATHS ${GMP_DIR})
   find_library(GMPXX_LIBRARIES gmpxx PATHS ${GMP_DIR})
@@ -406,38 +400,9 @@ endif()
 ########## generate cmake config files #####################
 ############################################################
 
-generate_config_files()
+#generate_config_files()
 
 Feature_Summary(WHAT ALL)
-
-############################################################
-##                CPack settings                          ##
-############################################################
-
-
-# CPack version numbers for release tarball name.
-set(CPACK_PACKAGE_VERSION_MAJOR ${metaSMT_VERSION})
-#set(CPACK_PACKAGE_VERSION_MINOR 0)
-#set(CPACK_PACKAGE_VERSION_PATCH 0)
-
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "SMT programming library")
-set(CPACK_PACKAGE_VENDOR "metaSMT development team")
-set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
-set(CPACK_GENERATOR TGZ)
-set(
-CPACK_SOURCE_PACKAGE_FILE_NAME
-"metaSMT-${metaSMT_VERSION}"
-CACHE INTERNAL "tarball basename"
-)
-set(CPACK_SOURCE_GENERATOR TGZ TBZ2)
-
-set(CPACK_SOURCE_IGNORE_FILES
-"/\\\\.git"
-"/deps"
-"/build.*/"
-"/root"
-)
-include(CPack)
 
 
 ############################################################

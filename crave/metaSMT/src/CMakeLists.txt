@@ -22,11 +22,62 @@
 ##	SOFTWARE.
 ##########################################################################################
 
-
-add_subdirectory(lib)
-install(DIRECTORY metaSMT 
-  DESTINATION include/
-  FILES_MATCHING PATTERN "*.hpp"
+add_library(metaSMT STATIC
+  lib/_var_id.cpp
 )
 
-# vim: ft=cmake:ts=2:sw=2:expandtab
+target_link_libraries(metaSMT PUBLIC ${metaSMT_LIBS})
+target_include_directories(metaSMT PUBLIC 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+)
+
+if(metaSMT_USE_Z3)
+  target_include_directories(metaSMT PUBLIC 
+    $<BUILD_INTERFACE:${Z3_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+endif()
+
+if(metaSMT_USE_CUDD)
+  target_include_directories(metaSMT PUBLIC 
+    $<BUILD_INTERFACE:${CUDD_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+endif()
+
+### INSTALL
+include(GNUInstallDirs)
+install(TARGETS metaSMT EXPORT metasmt-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/metaSMT
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/metaSMT
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    FILES_MATCHING PATTERN "*.hpp"
+)
+
+set(metaSMT_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake)
+include(CMakePackageConfigHelpers)
+
+install(EXPORT metasmt-targets
+    DESTINATION ${metaSMT_CMAKE_CONFIG_DIR}
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/metasmt-config-version.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/../cmake/metasmt-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/metasmt-config.cmake
+    INSTALL_DESTINATION ${metaSMT_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/metasmt-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/metasmt-config-version.cmake
+    DESTINATION ${metaSMT_CMAKE_CONFIG_DIR})
