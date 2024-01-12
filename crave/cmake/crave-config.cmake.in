@@ -1,6 +1,7 @@
 @PACKAGE_INIT@
 include(CMakeFindDependencyMacro)
 
+set(metaSMT_DIR "${CMAKE_INSTALL_LIBDIR}/cmake")
 find_dependency(metaSMT)
 
 if(NOT TARGET crave::crave)

@@ -12,5 +12,5 @@ add_executable(ubus
     vip/ubus_transfer.cpp
 )
 
-target_link_libraries(ubus SystemC::systemc crave::crave ${UVM_SystemC_LIBRARIES} crave2uvm)
+target_link_libraries(ubus crave2uvm crave ${UVM_SystemC_LIBRARIES} SystemC::systemc Threads::Threads ${Boost_LIBRARIES})
 target_include_directories(ubus PRIVATE ${UVM_SystemC_INCLUDE_DIRS} )

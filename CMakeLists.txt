@@ -20,11 +20,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(crave2uvm VERSION 1.0 LANGUAGES CXX)
 
-# Set C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Set the path to SystemC if provided through the SYSTEMC_HOME environment variable
 if(DEFINED ENV{SYSTEMC_HOME})
@@ -35,14 +33,23 @@ if(NOT SystemCLanguage_FOUND)
     message(FATAL_ERROR "SystemC not found. Please provide the path to SystemC.")
 endif()
 
-find_package(CRAVE REQUIRED)
-if(NOT CRAVE_FOUND)
-    message(FATAL_ERROR "CRAVE not found. Please provide the path to CRAVE.")
-endif()
-
 find_package(UVM-SystemC REQUIRED)
 if(NOT UVM_SystemC_FOUND)
     message(FATAL_ERROR "UVM-SystemC not found. Please provide the path to UVM-SystemC.")
+endif()
+
+set(Boost_NO_BOOST_CMAKE TRUE)
+set(Boost_NO_SYSTEM_PATHS TRUE)
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+option(BUILD_CRAVE "Build CRAVE and metaSMT as part of the project or import it from a different location" ON)
+if(BUILD_CRAVE)
+    add_subdirectory(crave)
+else(BUILD_CRAVE)
+    find_package(CRAVE REQUIRED)
+    if(NOT CRAVE_FOUND)
+        message(FATAL_ERROR "CRAVE not found. Please provide the path to CRAVE.")
+    endif()
 endif()
 
 ##################################################################################################
@@ -96,5 +103,4 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/crave2uvm-config-version.cmake
     DESTINATION ${CRAVE2UVM_CMAKE_CONFIG_DIR})
 
-# Add examples directory
 add_subdirectory(examples)

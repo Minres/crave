@@ -24,7 +24,126 @@
 ##	SOFTWARE.
 ##########################################################################################
 
-add_subdirectory(lib)
+SET(CRAVE_LIB_SRC 
+  lib/ConstrainedRandom.cpp
+  lib/ConstrainedRandomInit.cpp
+  lib/EvalVisitor.cpp
+  lib/FixWidthVisitor.cpp
+  lib/GetSupportSetVisitor.cpp
+  lib/metaSMTNodeVisitor.cpp
+  lib/metaSMTNodeVisitorYices2.cpp
+  lib/ReplaceVisitor.cpp
+  lib/ToDotNodeVisitor.cpp
+  lib/CraveSettings.cpp
+  lib/Generator.cpp
+  lib/SettingType.cpp
+  lib/VariableCoverageGenerator.cpp
+  lib/ConstraintPartition.cpp
+  lib/Evaluator.cpp
+  lib/RandObjGenerator.cpp
+  lib/CraveSettings.cpp
+  lib/Evaluator.cpp
+  lib/RandObjGenerator.cpp
+  lib/SettingType.cpp
+  lib/VariableCoverageSolver.cpp
+  lib/VariableDefaultSolver.cpp
+  lib/VariableGeneratorType.cpp
+  lib/VariableSolver.cpp
+  lib/VectorGenerator.cpp
+  lib/ConstrainedRandom.cpp
+  lib/UserVectorConstraint.cpp
+  lib/UserConstraintType.cpp
+  lib/ConstraintManager.cpp
+  lib/ConstraintPartitioner.cpp
+  lib/Operators.cpp
+  lib/Distribution.cpp
+  lib/RandomBase.cpp
+  lib/VariableGeneratorMT.cpp
+  lib/ComplexityEstimationVisitor.cpp
+  lib/RandomSeedManager.cpp
+)
+
+if (CRAVE_ENABLE_EXPERIMENTAL)
+  LIST(APPEND CRAVE_LIB_SRC
+    lib/experimental/Object.cpp	
+    lib/experimental/GraphVisitor.cpp	
+    lib/experimental/ConstrainedRandomGraph.cpp  
+    lib/experimental/Experimental.cpp
+    lib/experimental/ConstraintBase.cpp
+    lib/experimental/SequenceItem.cpp
+    lib/experimental/Expression.cpp
+    lib/experimental/graph/Rule.cpp
+  )
+endif (CRAVE_ENABLE_EXPERIMENTAL)
+
+add_library (${PROJECT_NAME} STATIC
+  ${CRAVE_LIB_SRC}
+)
+
+if(MINGW)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wa,-mbig-obj)
+endif()
+if(metaSMT_USE_Boolector)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_Boolector)
+endif()
+if(metaSMT_USE_CVC4)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_CVC4)
+endif()
+if(metaSMT_USE_STP)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_STP)
+endif()
+if(metaSMT_USE_SWORD)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_SWORD)
+endif()
+if(metaSMT_USE_YICES2)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_YICES2)
+endif()
+if(metaSMT_USE_Z3)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_Z3 -DmetaSMT_Z3_ULL_API)
+  target_compile_options(${PROJECT_NAME} PRIVATE ${Z3_CXXFLAGS})
+endif()
+if(metaSMT_USE_CUDD)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_CUDD)
+endif()
+
+target_link_libraries (${PROJECT_NAME} PUBLIC metaSMT)
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+
+#### INSTALL 
+include(GNUInstallDirs)
+install(TARGETS crave EXPORT crave-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/crave
+)
+
+set(CRAVE_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake)
+include(CMakePackageConfigHelpers)
+
+install(EXPORT crave-targets
+    DESTINATION ${CRAVE_CMAKE_CONFIG_DIR}
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/crave-config-version.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/crave-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/crave-config.cmake
+    INSTALL_DESTINATION ${CRAVE_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/crave-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/crave-config-version.cmake
+    DESTINATION ${CRAVE_CMAKE_CONFIG_DIR})
+
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/crave
     DESTINATION ${CMAKE_INSTALL_PREFIX}/include
