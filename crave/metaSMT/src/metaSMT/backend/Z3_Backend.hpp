@@ -29,7 +29,7 @@
 #include "../result_wrapper.hpp"
 #include "../Features.hpp"
 
-#include <z3++.h>
+#include <c++/z3++.h>
 
 #include <boost/any.hpp>
 #include <boost/mpl/map/map40.hpp>

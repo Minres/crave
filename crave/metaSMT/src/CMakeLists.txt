@@ -33,9 +33,7 @@ target_include_directories(metaSMT PUBLIC
 )
 
 if(metaSMT_USE_Z3)
-  target_include_directories(metaSMT PUBLIC 
-    $<BUILD_INTERFACE:${Z3_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include>)
+  target_link_libraries(metaSMT PUBLIC libz3)
 endif()
 
 if(metaSMT_USE_CUDD)

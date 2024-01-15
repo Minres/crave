@@ -135,12 +135,17 @@ else()
 endif()
 SET_PACKAGE_PROPERTIES(Boolector PROPERTIES DESCRIPTION "solver for SMT QF_BV and Arrays")
 
+include(FetchContent)
 if (metaSMT_USE_Z3)
-  find_package(Z3 QUIET)
+  FetchContent_Declare(
+    Z3
+    GIT_REPOSITORY https://github.com/Z3Prover/z3.git
+    GIT_TAG        z3-4.12.0
+  )
+  FetchContent_MakeAvailable(Z3)
 else()
   set(Z3_FOUND 0)
 endif()
-SET_PACKAGE_PROPERTIES(Z3 PROPERTIES DESCRIPTION "solver for various SMT theories")
 
 if (metaSMT_USE_YICES2)
   find_package(YICES2 QUIET)
@@ -220,40 +225,6 @@ if(Z3_FOUND)
     find_package(Threads QUIET)
     find_library(RT_LIB rt)
     set(Z3_LIBRARIES ${Z3_LIBRARIES} ${RT_LIB} ${CMAKE_THREAD_LIBS_INIT})
-  endif()
-
-  include(CheckCXXSourceRuns)
-
-  set(CMAKE_REQUIRED_FLAGS ${Z3_CXXFLAGS})
-  set(CMAKE_REQUIRED_INCLUDES ${Z3_INCLUDE_DIR})
-  set(CMAKE_REQUIRED_LIBRARIES ${Z3_LIBRARIES})
-
-  check_CXX_source_runs("#include <z3++.h>
-int main(int argc, const char *argv[]) {
-  z3::context c;
-  z3::solver s(c);
-  s.check();
-  return 0;
-}"
-  Z3_WORKS)
-
-  if( NOT Z3_WORKS )
-    message(WARNING "Disabling Z3 due to linking errors.")
-    set( Z3_FOUND 0)
-  endif()
-
-  check_CXX_source_compiles("#include <z3++.h>
-int main(int argc, const char *argv[]) {
-  z3::context c;
-  z3::expr e(c);
-  unsigned long long val = 0;
-  Z3_get_numeral_uint64(0, e, &val);
-  return 0;
-}"
-  Z3_ULL_API)
-
-  if( Z3_ULL_API )
-    set(Z3_CXXFLAGS "${Z3_CXXFLAGS} -DmetaSMT_Z3_ULL_API")
   endif()
 
 endif()
