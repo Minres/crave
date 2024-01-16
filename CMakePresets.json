@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 20,
+      "patch": 0
+    },
+    "configurePresets": [
+      {
+        "name": "CUDD-Z3",
+        "description": "Configure with Ninja, metaSMT_USE_CUDD=ON, and metaSMT_USE_Z3=ON",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release",
+          "metaSMT_USE_CUDD": "ON",
+          "metaSMT_USE_Z3": "ON"
+        }
+      }
+    ]
+  }
+  

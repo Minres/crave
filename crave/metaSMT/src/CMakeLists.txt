@@ -37,9 +37,7 @@ if(metaSMT_USE_Z3)
 endif()
 
 if(metaSMT_USE_CUDD)
-  target_include_directories(metaSMT PUBLIC 
-    $<BUILD_INTERFACE:${CUDD_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include>)
+  target_link_libraries(metaSMT PUBLIC cudd_git::cudd_git)
 endif()
 
 ### INSTALL

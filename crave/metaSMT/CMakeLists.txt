@@ -143,8 +143,6 @@ if (metaSMT_USE_Z3)
     GIT_TAG        z3-4.12.0
   )
   FetchContent_MakeAvailable(Z3)
-else()
-  set(Z3_FOUND 0)
 endif()
 
 if (metaSMT_USE_YICES2)
@@ -169,9 +167,43 @@ endif()
 set_package_info(CVC4 "solver for various SMT theories")
 
 if (metaSMT_USE_CUDD)
-  find_package(CUDD QUIET)
-else ()
-  set(CUDD_FOUND 0)
+  FetchContent_Declare(
+    cudd_git
+    GIT_REPOSITORY https://github.com/nbruns1/cudd.git
+    GIT_TAG cudd-3.0.0
+  )
+
+  FetchContent_GetProperties(cudd_git)
+  if(NOT cudd_git_POPULATED)
+    FetchContent_Populate(cudd_git)
+
+    execute_process(
+      COMMAND touch configure.ac aclocal.m4 configure Makefile.am Makefile.in
+      WORKING_DIRECTORY ${cudd_git_SOURCE_DIR}
+    )
+
+    set(cudd_install_dir ${CMAKE_BINARY_DIR}/_deps/cudd_git-install)
+    execute_process(
+      COMMAND ${cudd_git_SOURCE_DIR}/configure --enable-obj --enable-dddmp --prefix=${cudd_install_dir}
+      WORKING_DIRECTORY ${cudd_git_BINARY_DIR}
+    )
+
+    execute_process(
+      COMMAND make -j
+      COMMAND make install -j
+      WORKING_DIRECTORY ${cudd_git_BINARY_DIR}
+      RESULT_VARIABLE execute_result
+    )
+
+    if(NOT execute_result EQUAL 0)
+      message(FATAL_ERROR "Failed to execute cudd_git commands. Return value: ${execute_result}")
+    endif()
+
+  endif()
+
+  add_library(cudd_git::cudd_git INTERFACE IMPORTED)
+  target_include_directories(cudd_git::cudd_git INTERFACE ${cudd_install_dir}/include)
+  target_link_libraries(cudd_git::cudd_git INTERFACE ${cudd_install_dir}/lib/libcudd.a)
 endif ()
 
 if (metaSMT_USE_Aiger)
@@ -209,26 +241,6 @@ if(Boolector_FOUND AND (Boolector_VERSION VERSION_GREATER 2))
   set(Boolector_LIBRARIES ${Boolector_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-if(Z3_FOUND)
-  find_package(OpenMP)
-  if (OPENMP_FOUND)
-    set(Z3_CXXFLAGS ${OpenMP_CXX_FLAGS})
-    if (UNIX OR MINGW)
-      list(APPEND Z3_LIBRARIES ${OpenMP_CXX_FLAGS})
-    endif()
-    message(STATUS "Use Z3 with OpenMP")
-  else()
-    message(STATUS "Use Z3 without OpenMP")
-  endif()
-
-  if (UNIX)
-    find_package(Threads QUIET)
-    find_library(RT_LIB rt)
-    set(Z3_LIBRARIES ${Z3_LIBRARIES} ${RT_LIB} ${CMAKE_THREAD_LIBS_INIT})
-  endif()
-
-endif()
-
 if(CVC4_FOUND)
   if( GMPXX_LIBRARIES )
     set(CVC4_LIBRARIES ${CVC4_LIBRARIES} ${GMPXX_LIBRARIES})
@@ -245,10 +257,6 @@ if(CVC4_FOUND)
       set(CVC4_CXXFLAGS "-DCVC4_WITHOUT_KIND_IFF")
     endif()
   endif()
-endif()
-
-if( WIN32 AND NOT Z3_FOUND )
-  message(FATAL_ERROR "Windows build: Z3 is required but cannot be found!")
 endif()
 
 if (metaSMT_DOC_Doxygen)
@@ -280,14 +288,6 @@ if(Boolector_FOUND)
   endif()
   set(metaSMT_CXXFLAGS "${metaSMT_CXXFLAGS} ${Boolector_CXXFLAGS}")
   list(APPEND metaSMT_AVAILABLE_QF_ABV_SOLVERS "BTOR")
-endif()
-
-if(Z3_FOUND)
-  config_find(Z3 ${Z3_DIR})
-  list(APPEND metaSMT_LIBS ${Z3_LIBRARIES})
-  list(APPEND metaSMT_INCLUDES ${Z3_INCLUDE_DIR})
-  set(metaSMT_CXXFLAGS "${metaSMT_CXXFLAGS} ${Z3_CXXFLAGS}")
-  list(APPEND metaSMT_AVAILABLE_QF_ABV_SOLVERS "Z3")
 endif()
 
 if(STP_FOUND)
@@ -322,10 +322,8 @@ if(Aiger_FOUND)
   list(APPEND metaSMT_INCLUDES ${Aiger_INCLUDE_DIR})
 endif()
 
-if(CUDD_FOUND)
-  config_find(CUDD ${CUDD_DIR})
-  list(APPEND metaSMT_LIBS ${CUDD_LIBRARIES})
-  list(APPEND metaSMT_INCLUDES ${CUDD_INCLUDE_DIR} ${cudd_INCLUDE_DIRS})
+if(metaSMT_USE_CUDD)
+  list(APPEND metaSMT_LIBS cudd_git::cudd_git)
 endif()
 
 if(MiniSat_FOUND)
