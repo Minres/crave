@@ -138,11 +138,43 @@ SET_PACKAGE_PROPERTIES(Boolector PROPERTIES DESCRIPTION "solver for SMT QF_BV an
 include(FetchContent)
 if (metaSMT_USE_Z3)
   FetchContent_Declare(
-    Z3
+    z3_git
     GIT_REPOSITORY https://github.com/Z3Prover/z3.git
-    GIT_TAG        z3-4.12.0
+    GIT_TAG        z3-4.6.0
   )
-  FetchContent_MakeAvailable(Z3)
+
+  FetchContent_GetProperties(z3_git)
+  if(NOT z3_git_POPULATED)
+    FetchContent_Populate(z3_git)
+
+    set(z3_install_dir ${CMAKE_BINARY_DIR}/_deps/z3_git-install)
+    execute_process(
+      COMMAND ./configure --staticlib --prefix=${z3_install_dir}
+      WORKING_DIRECTORY ${z3_git_SOURCE_DIR}
+    )
+
+    execute_process(
+      COMMAND make -j
+      COMMAND make install -j
+      WORKING_DIRECTORY ${z3_git_SOURCE_DIR}/build
+      RESULT_VARIABLE execute_result
+    )
+
+    if(NOT execute_result EQUAL 0)
+      message(FATAL_ERROR "Failed to execute z3_git commands. Return value: ${execute_result}")
+    endif()
+
+    find_package(OpenMP)
+    if (OPENMP_FOUND)
+      message(STATUS "Use Z3 with OpenMP")
+    else()
+      message(STATUS "Use Z3 without OpenMP")
+    endif()
+  endif()
+
+  add_library(z3_git::z3_git INTERFACE IMPORTED)
+  target_include_directories(z3_git::z3_git INTERFACE ${z3_install_dir}/include)
+  target_link_libraries(z3_git::z3_git INTERFACE ${z3_install_dir}/lib/libz3.a ${OpenMP_CXX_FLAGS})
 endif()
 
 if (metaSMT_USE_YICES2)

@@ -120,7 +120,8 @@ add_test_executable( direct_Boolector direct_Boolector.cpp
 
 add_test_executable( direct_Yices2 direct_Yices2.cpp REQUIRES YICES2_FOUND )
 
-add_test_executable( direct_Z3 direct_Z3.cpp REQUIRES metaSMT_USE_Z3 )
+add_test_executable( direct_Z3 direct_Z3.cpp REQUIRES metaSMT_USE_Z3 
+PROPERTIES COMPILE_FLAGS -DmetaSMT_Z3_ULL_API)
 
 add_test_executable( direct_STP direct_STP.cpp REQUIRES STP_FOUND )
 

@@ -10,7 +10,7 @@
         "name": "CUDD-Z3",
         "description": "Configure with Ninja, metaSMT_USE_CUDD=ON, and metaSMT_USE_Z3=ON",
         "generator": "Ninja",
-        "binaryDir": "${sourceDir}/build",
+        "binaryDir": "${sourceDir}/build/${presetName}",
         "cacheVariables": {
           "CMAKE_BUILD_TYPE": "Release",
           "metaSMT_USE_CUDD": "ON",
