@@ -23,7 +23,7 @@
         "cacheVariables": {
           "metaSMT_USE_YICES2": "ON",
           "metaSMT_USE_Boolector": "OFF",
-          "metaSMT_USE_CVC4": "OFF",
+          "metaSMT_USE_CVC4": "ON",
           "metaSMT_USE_STP": "OFF",
           "metaSMT_USE_Aiger": "OFF",
           "metaSMT_USE_picosat": "OFF"

@@ -45,6 +45,10 @@ if (metaSMT_USE_YICES2)
   target_link_libraries(metaSMT PUBLIC yices2_git::yices2_git)
 endif()
     
+if (metaSMT_USE_CVC4)
+  target_link_libraries(metaSMT PUBLIC cvc4_git::cvc4_git)
+endif()
+
 ### INSTALL
 include(GNUInstallDirs)
 install(TARGETS metaSMT EXPORT metasmt-targets

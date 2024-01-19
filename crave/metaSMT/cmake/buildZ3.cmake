@@ -1,14 +1,16 @@
 FetchContent_Declare(
   z3_git
   GIT_REPOSITORY https://github.com/Z3Prover/z3.git
-  GIT_TAG        z3-4.6.0
+  GIT_TAG z3-4.6.0
 )
 FetchContent_GetProperties(z3_git)
+
 if(NOT z3_git_POPULATED)
   FetchContent_Populate(z3_git)
 
-  #install dir must be availble to configure time otherwise CMake will complain
+  # install dir must be availble to configure time otherwise CMake will complain
   set(z3_install_dir ${CMAKE_BINARY_DIR}/_deps/z3_git-install)
+
   if(NOT Z3_EXTERNAL_PROJECT_ADDED)
     execute_process(
       COMMAND mkdir -p ${z3_install_dir}/include
@@ -27,6 +29,7 @@ if(NOT z3_git_POPULATED)
     )
     set(Z3_EXTERNAL_PROJECT_ADDED TRUE CACHE INTERNAL "Flag indicating whether the external project has been added")
   endif()
+
   add_library(z3_git::z3_git INTERFACE IMPORTED)
   target_include_directories(z3_git::z3_git INTERFACE ${z3_install_dir}/include)
   target_link_libraries(z3_git::z3_git INTERFACE z3)
@@ -34,7 +37,8 @@ if(NOT z3_git_POPULATED)
   message(STATUS "Use Z3 from ${z3_install_dir}")
 
   find_package(OpenMP)
-  if (OPENMP_FOUND)
+
+  if(OPENMP_FOUND)
     message(STATUS "Use Z3 with OpenMP")
   else()
     message(STATUS "Use Z3 without OpenMP")
