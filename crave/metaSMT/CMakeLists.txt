@@ -142,9 +142,7 @@ if (metaSMT_USE_Z3)
 endif()
 
 if (metaSMT_USE_YICES2)
-  find_package(YICES2 QUIET)
-else()
-  set(YICES2_FOUND 0)
+  include(cmake/buildYICES2.cmake)
 endif()
 SET_PACKAGE_PROPERTIES(YICES2 PROPERTIES DESCRIPTION "solver for various SMT theories")
 
@@ -263,12 +261,6 @@ if(CVC4_FOUND)
   list(APPEND metaSMT_LIBS ${CVC4_LIBRARIES})
   list(APPEND metaSMT_INCLUDES ${CVC4_INCLUDE_DIR})
   set(metaSMT_CXXFLAGS "${metaSMT_CXXFLAGS} ${CVC4_CXXFLAGS}")
-endif()
-
-if (YICES2_FOUND)
-  config_find(YICES2 ${YICES2_DIR})
-  list(APPEND metaSMT_LIBS ${YICES2_LIBRARIES})
-  list(APPEND metaSMT_INCLUDES ${YICES2_INCLUDE_DIR})
 endif()
 
 if(Aiger_FOUND)

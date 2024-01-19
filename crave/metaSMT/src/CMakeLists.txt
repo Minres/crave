@@ -41,6 +41,10 @@ if(metaSMT_USE_CUDD)
   target_link_libraries(metaSMT PUBLIC cudd_git::cudd_git)
 endif()
 
+if (metaSMT_USE_YICES2)
+  target_link_libraries(metaSMT PUBLIC yices2_git::yices2_git)
+endif()
+    
 ### INSTALL
 include(GNUInstallDirs)
 install(TARGETS metaSMT EXPORT metasmt-targets

@@ -116,7 +116,7 @@ add_test_executable( direct_Boolector direct_Boolector.cpp
   PROPERTIES COMPILE_OPTIONS "${Boolector_CXXFLAGS}"
   )
 
-add_test_executable( direct_Yices2 direct_Yices2.cpp REQUIRES YICES2_FOUND )
+add_test_executable( direct_Yices2 direct_Yices2.cpp REQUIRES metaSMT_USE_YICES2)
 
 add_test_executable(direct_Z3 direct_Z3.cpp REQUIRES metaSMT_USE_Z3
   PROPERTIES COMPILE_OPTIONS -DmetaSMT_Z3_ULL_API)
