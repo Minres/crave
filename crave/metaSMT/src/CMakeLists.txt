@@ -49,6 +49,10 @@ if (metaSMT_USE_CVC4)
   target_link_libraries(metaSMT PUBLIC cvc4_git::cvc4_git)
 endif()
 
+if(metaSMT_USE_STP)
+  target_link_libraries(metaSMT PUBLIC stp_git::stp_git)
+endif()
+
 ### INSTALL
 include(GNUInstallDirs)
 install(TARGETS metaSMT EXPORT metasmt-targets

@@ -121,7 +121,7 @@ add_test_executable( direct_Yices2 direct_Yices2.cpp REQUIRES metaSMT_USE_YICES2
 add_test_executable(direct_Z3 direct_Z3.cpp REQUIRES metaSMT_USE_Z3
   PROPERTIES COMPILE_OPTIONS -DmetaSMT_Z3_ULL_API)
 
-add_test_executable( direct_STP direct_STP.cpp REQUIRES STP_FOUND )
+add_test_executable( direct_STP direct_STP.cpp REQUIRES metaSMT_USE_STP )
 
 if (NOT CVC4_CXXFLAGS)
   set(CVC4_CXXFLAGS "-DCVC4_DUMMY_FLAG")
