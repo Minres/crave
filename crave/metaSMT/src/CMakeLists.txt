@@ -57,6 +57,10 @@ if(metaSMT_USE_MiniSat)
   target_link_libraries(metaSMT PUBLIC minisat_git::minisat_git)
 endif()
 
+if(metaSMT_USE_picosat)
+  target_link_libraries(metaSMT PUBLIC picosat_git::picosat_git)
+endif()
+
 ### INSTALL
 include(GNUInstallDirs)
 install(TARGETS metaSMT EXPORT metasmt-targets

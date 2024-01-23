@@ -170,7 +170,7 @@ if (metaSMT_USE_MiniSat)
 endif ()
 
 if (metaSMT_USE_picosat )
-  find_package (PicoSAT QUIET)
+  include(cmake/buildPicoSat.cmake)
 endif()
 
 if( metaSMT_USE_lingeling )
