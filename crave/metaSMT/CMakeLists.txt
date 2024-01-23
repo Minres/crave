@@ -166,9 +166,7 @@ else ()
 endif()
 
 if (metaSMT_USE_MiniSat)
-  find_package(MiniSat QUIET)
-else ()
-  set(MiniSat_FOUND 0)
+  include(cmake/buildMiniSat.cmake)
 endif ()
 
 if (metaSMT_USE_picosat )
@@ -222,13 +220,6 @@ endif()
 
 if(metaSMT_USE_CUDD)
   list(APPEND metaSMT_LIBS cudd_git::cudd_git)
-endif()
-
-if(MiniSat_FOUND)
-  config_find(MiniSat ${MiniSat_DIR})
-  list(APPEND metaSMT_LIBS ${MiniSat_LIBRARIES})
-  list(APPEND metaSMT_INCLUDES ${MiniSat_INCLUDE_DIR})
-  set(metaSMT_CXXFLAGS "${metaSMT_CXXFLAGS} ${MiniSat_CXXFLAGS}")
 endif()
 
 if (PicoSAT_FOUND)

@@ -53,6 +53,10 @@ if(metaSMT_USE_STP)
   target_link_libraries(metaSMT PUBLIC stp_git::stp_git)
 endif()
 
+if(metaSMT_USE_MiniSat)
+  target_link_libraries(metaSMT PUBLIC minisat_git::minisat_git)
+endif()
+
 ### INSTALL
 include(GNUInstallDirs)
 install(TARGETS metaSMT EXPORT metasmt-targets

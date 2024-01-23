@@ -132,8 +132,7 @@ add_test_executable(direct_CVC4 direct_CVC4.cpp
 )
 
 add_test_executable(direct_MiniSAT direct_MiniSAT.cpp
-  REQUIRES MiniSat_FOUND
-  PROPERTIES COMPILE_OPTIONS "${MiniSat_CXXFLAGS}"
+  REQUIRES metaSMT_USE_MiniSat
 )
 
 add_test_executable( direct_PicoSAT direct_PicoSAT.cpp
@@ -145,8 +144,7 @@ add_test_executable( direct_Lingeling direct_Lingeling.cpp
 )
 
 add_test_executable( direct_Aiger_MiniSAT direct_Aiger_MiniSAT.cpp
-  REQUIRES MiniSat_FOUND Aiger_FOUND
-  PROPERTIES COMPILE_FLAGS "${MiniSat_CXXFLAGS}"
+  REQUIRES metaSMT_USE_MiniSat Aiger_FOUND
   )
 
 add_test_executable( direct_Aiger_PicoSAT direct_Aiger_PicoSAT.cpp
