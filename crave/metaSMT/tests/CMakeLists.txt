@@ -136,7 +136,7 @@ add_test_executable(direct_MiniSAT direct_MiniSAT.cpp
 )
 
 add_test_executable( direct_PicoSAT direct_PicoSAT.cpp
-  REQUIRES PicoSAT_FOUND
+  REQUIRES metaSMT_USE_picosat
 )
 
 add_test_executable( direct_Lingeling direct_Lingeling.cpp
@@ -144,8 +144,8 @@ add_test_executable( direct_Lingeling direct_Lingeling.cpp
 )
 
 add_test_executable( direct_Aiger_MiniSAT direct_Aiger_MiniSAT.cpp
-  REQUIRES metaSMT_USE_MiniSat Aiger_FOUND
+  REQUIRES metaSMT_USE_MiniSat metaSMT_USE_Aiger
   )
 
 add_test_executable( direct_Aiger_PicoSAT direct_Aiger_PicoSAT.cpp
-  REQUIRES PicoSAT_FOUND Aiger_FOUND )
+  REQUIRES metaSMT_USE_picosat metaSMT_USE_Aiger )

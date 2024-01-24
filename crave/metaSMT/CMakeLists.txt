@@ -159,10 +159,7 @@ if (metaSMT_USE_CUDD)
 endif ()
 
 if (metaSMT_USE_Aiger)
-  find_package(Aiger QUIET) 
-  list(APPEND Aiger_LIBRARIES Aiger)
-else ()
-  set(Aiger_FOUND 0)
+  include(cmake/buildAiger.cmake)
 endif()
 
 if (metaSMT_USE_MiniSat)
@@ -209,13 +206,6 @@ if(Boolector_FOUND)
     set(Boolector_CXXFLAGS "${Boolector_CXXFLAGS} -DmetaSMT_BOOLECTOR_1_API")
   endif()
   set(metaSMT_CXXFLAGS "${metaSMT_CXXFLAGS} ${Boolector_CXXFLAGS}")
-endif()
-
-
-if(Aiger_FOUND)
-  config_find(Aiger ${Aiger_DIR})
-  list(APPEND metaSMT_LIBS ${Aiger_LIBRARIES})
-  list(APPEND metaSMT_INCLUDES ${Aiger_INCLUDE_DIR})
 endif()
 
 if(metaSMT_USE_CUDD)
