@@ -112,9 +112,7 @@ add_test_executable(direct_CUDD_Distributed direct_CUDD_Distributed.cpp
   REQUIRES metaSMT_USE_CUDD)
 
 add_test_executable( direct_Boolector direct_Boolector.cpp
-  REQUIRES Boolector_FOUND 
-  PROPERTIES COMPILE_OPTIONS "${Boolector_CXXFLAGS}"
-  )
+  REQUIRES metaSMT_USE_Boolector)
 
 add_test_executable( direct_Yices2 direct_Yices2.cpp REQUIRES metaSMT_USE_YICES2)
 

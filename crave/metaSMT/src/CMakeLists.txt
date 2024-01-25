@@ -65,6 +65,20 @@ if(metaSMT_USE_Aiger)
   target_link_libraries(metaSMT PUBLIC aiger_git::aiger_git)
 endif()
 
+if(metaSMT_USE_Boolector)
+  target_link_libraries(metaSMT PUBLIC Boolector::boolector)
+  if ((Boolector_VERSION VERSION_GREATER 2) OR (Boolector_VERSION VERSION_EQUAL 2))
+    message( STATUS "Use Boolector ${Boolector_VERSION}" )
+    if ((Boolector_VERSION VERSION_GREATER 2.2.0))
+      message( STATUS "Use Boolector v2 new API" )
+      target_compile_definitions(metaSMT PUBLIC metaSMT_BOOLECTOR_2_NEW_API)
+    endif()
+  else()
+    message( STATUS "Use Boolector v1" )
+    target_compile_definitions(metaSMT PUBLIC metaSMT_BOOLECTOR_1_API)
+  endif()
+endif()
+
 ### INSTALL
 include(GNUInstallDirs)
 install(TARGETS metaSMT EXPORT metasmt-targets
