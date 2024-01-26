@@ -62,6 +62,7 @@ endfunction(add_all_tests)
 
 add_library (${PROJECT_NAME}_boost_test ${STATIC_OR_SHARED} boost_test.cpp)
 link_libraries (${PROJECT_NAME}_boost_test ${PROJECT_NAME} Threads::Threads ${Boost_LIBRARIES} )
+target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
 
 if (WIN32)
   add_definitions("-DBOOST_TEST_INCLUDED") # this is to prevent boost autolink
@@ -110,10 +111,10 @@ endif (metaSMT_USE_Z3)
 #  add_all_tests(use_Cudd use_Cudd.cpp)
 #endif (metaSMT_USE_CUDD)
 
-if(SystemC_FOUND)
+if(SystemCLanguage_FOUND)
   add_executable (SystemC_Data core/test_SystemC_Data.cpp)
   add_all_tests( SystemC_Data core/test_SystemC_Data.cpp)
   target_link_libraries ( SystemC_Data SystemC::systemc ${Boost_FILESYSTEM_LIBRARY} ${PROJECT_NAME})
-endif(SystemC_FOUND)
+endif(SystemCLanguage_FOUND)
 
 

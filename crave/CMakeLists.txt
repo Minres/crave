@@ -79,13 +79,6 @@ endif()
 
 add_subdirectory(metaSMT)
 
-if(${WITH_SYSTEMC})
-    add_definitions(-DWITH_SYSTEMC)
-endif()
-
-include_directories(${metaSMT_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIRS})
-
 if(GLOG_FOUND)
     include_directories(${GLOG_INCLUDE_DIRS})
 endif()

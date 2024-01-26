@@ -106,6 +106,11 @@ if(metaSMT_USE_CUDD)
 endif()
 
 target_link_libraries (${PROJECT_NAME} PUBLIC metaSMT)
+if(WITH_SYSTEMC)
+  target_link_libraries (${PROJECT_NAME} PUBLIC SystemC::systemc)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DWITH_SYSTEMC)
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:include>)

@@ -8,25 +8,28 @@
     "configurePresets": [
       {
         "name": "CUDD-Z3",
-        "description": "Configure with Ninja, metaSMT_USE_CUDD=ON, and metaSMT_USE_Z3=ON",
+        "description": "Minimal CRAVE setup with CUDD and Z3",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/build/${presetName}",
         "cacheVariables": {
+          "WITH_SYSTEMC": "ON",
           "CMAKE_BUILD_TYPE": "Release",
           "metaSMT_USE_CUDD": "ON",
           "metaSMT_USE_Z3": "ON"
         }
       },
       {
-        "name": "FREE",
+        "name": "ALL",
         "inherits": "CUDD-Z3",
+        "description": "CRAVE setup with all SMTs",
         "cacheVariables": {
           "metaSMT_USE_YICES2": "ON",
-          "metaSMT_USE_Boolector": "OFF",
+          "metaSMT_USE_Boolector": "ON",
           "metaSMT_USE_CVC4": "ON",
-          "metaSMT_USE_STP": "OFF",
-          "metaSMT_USE_Aiger": "OFF",
-          "metaSMT_USE_picosat": "OFF"
+          "metaSMT_USE_MiniSat": "ON",
+          "metaSMT_USE_STP": "ON",
+          "metaSMT_USE_Aiger": "ON",
+          "metaSMT_USE_picosat": "ON"
         }
       }
     ]

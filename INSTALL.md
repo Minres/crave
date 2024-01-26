@@ -7,10 +7,11 @@ For demonstration, we ported the SystemVerilog example UBUS to UVM-SystemC and i
 
 Make sure all pre install requirements of CRAVE and UVM-SystemC are met:
 
-* CMake (at least v2.8.9)
+* CMake (at least v3.20)
 * GNU Make
 * g++ (at least v4.7.2)
 * SystemC (the environment variable SYSTEMC_HOME must be set accordingly)
+* UVM-SystemC (the environment variable UVM_SYSTEMC_HOME must be set accordingly)
 * Boost (at least v1.50.0 and the environment variable BOOST_ROOT must be set accordingly)
 * zlib development libraries (e.g. zlib1g-dev).
 
@@ -24,19 +25,15 @@ For more detailed instructions , please refer to the CRAVE README or contact us.
 
 To install and run the example, use the buildscript on the toplevel of this repository. It currently executes three common tasks:
 
-1. ./buildscript install: this will install CRAVE (shipped with this distribution) into ./crave, locally compiles UVM-SystemC into ../.. and setup the Makefile for the example "Ubus".
+1. Minimal CRAVE setup with CUDD and Z3: `cmake --preset CUDD-Z3 .`
 
-2. ./buildscript compile: this will compile the example and put the executables into build/bin.
-
-3. ./buildscript run: this will run the Ubus example.
+2. CRAVE setup with all SMTs (YICES2, CVC4, MiniSat, STP, Aiger, picosat): `cmake --preset ALL .`
 
 ## Tested OS
 
 This distribution has been tested on the following 64-bit Linux (x86_64) systems:
 
-* Fedora 22 with g++-5.3.1
-* Ubuntu 14.04.4 LTS with g++-4.8.4
-* Debian 7.0 with g++-4.7.2
+* CentOS7 gcc 7.3.0
 
 ## Contact
 

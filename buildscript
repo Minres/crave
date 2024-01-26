@@ -20,10 +20,10 @@ install_dependencies () {
                 wget https://github.com/accellera-official/systemc/archive/refs/tags/2.3.4.tar.gz
                 tar xvzf 2.3.4.tar.gz systemc-2.3.4
                 cd systemc-2.3.4
-                cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=`pwd` -DCMAKE_CXX_STANDARD=11 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=OFF .
+                cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=`pwd` -DCMAKE_CXX_STANDARD=11 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=ON .
                 make -j $NUM_THREADS
                 make install -j $NUM_THREADS
-                cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=`pwd` -DCMAKE_CXX_STANDARD=11 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=ON .
+                cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=`pwd` -DCMAKE_CXX_STANDARD=11 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=OFF .
                 make -j $NUM_THREADS
                 make install -j $NUM_THREADS
                 cd ..
