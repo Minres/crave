@@ -32,7 +32,7 @@ include_directories(${crave_SOURCE_DIR}/src)
 
 function (add_ex_test ex cfile)
  add_executable(${ex} ${cfile})
- target_link_libraries(${ex} ${PROJECT_NAME} Threads::Threads ${Boost_LIBRARIES})
+ target_link_libraries(${ex} ${PROJECT_NAME} Threads::Threads)
  target_include_directories(${ex} PRIVATE ${Boost_INCLUDE_DIRS})
  add_test("${ex}" ${ex})
  set_tests_properties ("${ex}" PROPERTIES TIMEOUT ${CRAVE_EXAMPLES_TIMEOUT}) 

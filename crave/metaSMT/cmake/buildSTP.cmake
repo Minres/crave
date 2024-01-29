@@ -1,3 +1,5 @@
+include(cmake/buildMiniSat.cmake)
+
 FetchContent_Declare(
     stp_repo
     GIT_REPOSITORY https://github.com/stp/stp.git
@@ -7,8 +9,6 @@ FetchContent_GetProperties(stp_repo)
 
 if(NOT stp_repo_POPULATED)
     FetchContent_Populate(stp_repo)
-
-    include(cmake/buildMiniSat.cmake)
 
     # install dir must be availble to configure time otherwise CMake will complain
     set(stp_install_dir ${CMAKE_BINARY_DIR}/_deps/stp-install)

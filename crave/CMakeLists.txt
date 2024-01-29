@@ -66,40 +66,12 @@ else()
     find_package(Boost REQUIRED COMPONENTS system filesystem)
 endif()
 
-find_package(GLOG)
-
-if(GLOG_FOUND)
-    add_definitions(-DCRAVE_HAVE_GLOG)
-endif()
-
 if(WITH_SYSTEMC)
     find_package(SystemCLanguage REQUIRED)
     find_package(Threads REQUIRED)
 endif()
 
 add_subdirectory(metaSMT)
-
-if(GLOG_FOUND)
-    include_directories(${GLOG_INCLUDE_DIRS})
-endif()
-
-set(ALL_EXTERNAL_LIBS "")
-
-if(GLOG_FOUND)
-    list(APPEND ALL_EXTERNAL_LIBS ${GLOG_LIBRARIES})
-endif()
-
-if(SystemCLanguage_FOUND)
-    list(APPEND ALL_EXTERNAL_LIBS SystemC::systemc Threads::Threads)
-endif(SystemCLanguage_FOUND)
-
-if(Boost_FILESYSTEM_FOUND)
-    list(APPEND ALL_EXTERNAL_LIBS ${Boost_FILESYSTEM_LIBRARY})
-endif()
-
-if(Boost_SYSTEM_FOUND)
-    list(APPEND ALL_EXTERNAL_LIBS ${Boost_SYSTEM_LIBRARY})
-endif()
 
 add_subdirectory(src)
 
@@ -113,7 +85,7 @@ if(CRAVE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
-set(${PROJECT_NAME}_LIBS ${CMAKE_INSTALL_PREFIX}/lib/lib${PROJECT_NAME}.a ${ALL_EXTERNAL_LIBS} ${metaSMT_LIBRARIES})
+set(${PROJECT_NAME}_LIBS ${CMAKE_INSTALL_PREFIX}/lib/lib${PROJECT_NAME}.a ${metaSMT_LIBRARIES})
 
 get_directory_property(ALL_INCLUDES INCLUDE_DIRECTORIES)
 set(${PROJECT_NAME}_INCLUDE ${CMAKE_INSTALL_PREFIX}/include ${ALL_INCLUDES})

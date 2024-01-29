@@ -175,36 +175,6 @@ else ()
   set(Doxygen_FOUND 0)
 endif ()
 
-#############################################################
-## Set LIBS, INCLUDES   #
-#############################################################
-
-set(metaSMT_INCLUDES ${Boost_INCLUDE_DIRS})
-
-if(metaSMT_USE_CUDD)
-  list(APPEND metaSMT_LIBS cudd_git::cudd_git)
-endif()
-
-if (PicoSAT_FOUND)
-  config_find(PicoSAT ${PicoSAT_DIR})
-  list(APPEND metaSMT_LIBS ${PicoSAT_LIBRARIES})
-  list(APPEND metaSMT_INCLUDES ${PicoSAT_INCLUDE_DIR})
-endif ()
-
-if (Lingeling_FOUND)
-  config_find(Lingeling ${Lingeling_DIR})
-  list(APPEND metaSMT_LIBS ${Lingeling_LIBRARIES})
-  list(APPEND metaSMT_INCLUDES ${Lingeling_INCLUDE_DIR})
-endif ()
-
-############################################################
-############# RPATH ########################################
-############################################################
-
-include(cmake/library_rpath.cmake)
-add_dependent_libraries(${metaSMT_LIBS})
-
-
 ############################################################
 ############# subdirectories ###############################
 ############################################################

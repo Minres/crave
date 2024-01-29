@@ -80,6 +80,14 @@ add_library (${PROJECT_NAME} STATIC
   ${CRAVE_LIB_SRC}
 )
 
+find_package(GLOG)
+if(GLOG_FOUND)
+  target_compile_options(${PROJECT_NAME} PUBLIC -DCRAVE_HAVE_GLOG)
+  target_include_directories(${PROJECT_NAME} PUBLIC ${GLOG_INCLUDE_DIRS})
+  target_link_libraries (${PROJECT_NAME} PUBLIC ${GLOG_LIBRARIES})
+endif()
+
+
 if(MINGW)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wa,-mbig-obj)
 endif()
@@ -105,9 +113,9 @@ if(metaSMT_USE_CUDD)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_CUDD)
 endif()
 
-target_link_libraries (${PROJECT_NAME} PUBLIC metaSMT)
+target_link_libraries (${PROJECT_NAME} PUBLIC metaSMT ${Boost_FILESYSTEM_LIBRARY})
 if(WITH_SYSTEMC)
-  target_link_libraries (${PROJECT_NAME} PUBLIC SystemC::systemc)
+  target_link_libraries (${PROJECT_NAME} PUBLIC SystemC::systemc Threads::Threads)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DWITH_SYSTEMC)
 endif()
 

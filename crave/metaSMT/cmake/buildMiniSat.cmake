@@ -1,5 +1,5 @@
-if(NOT MINISAT_MODULE_INCLUDED)
-    set(MINISAT_MODULE_INCLUDED TRUE CACHE INTERNAL "Flag indicating whether Minisat module has already been included")
+if(NOT DEFINED MINISAT_MODULE_INCLUDED)
+    set(MINISAT_MODULE_INCLUDED TRUE INTERNAL "Flag indicating whether Minisat module has already been included")
     set(minisat_install_dir ${CMAKE_BINARY_DIR}/_deps/minisat-install)
     execute_process(
         COMMAND mkdir -p ${minisat_install_dir}/include
@@ -12,8 +12,7 @@ if(NOT MINISAT_MODULE_INCLUDED)
             GIT_REPOSITORY https://github.com/stp/minisat.git
             GIT_TAG releases/2.2.1
             CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${minisat_install_dir} 
-            )
-
+        )
         set(minisat_EXTERNAL_PROJECT_ADDED TRUE CACHE INTERNAL "Flag indicating whether the external project has been added")
     endif()
 
