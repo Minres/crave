@@ -138,7 +138,7 @@ add_test_executable( direct_PicoSAT direct_PicoSAT.cpp
 )
 
 add_test_executable( direct_Lingeling direct_Lingeling.cpp
-  REQUIRES Lingeling_FOUND
+  REQUIRES metaSMT_USE_lingeling
 )
 
 add_test_executable( direct_Aiger_MiniSAT direct_Aiger_MiniSAT.cpp

@@ -61,6 +61,10 @@ if(metaSMT_USE_picosat)
   target_link_libraries(metaSMT PUBLIC picosat_git::picosat_git)
 endif()
 
+if(metaSMT_USE_lingeling)
+  target_link_libraries(metaSMT PUBLIC lingeling_git::lingeling_git)
+endif()
+
 if(metaSMT_USE_Aiger)
   target_link_libraries(metaSMT PUBLIC aiger_git::aiger_git)
 endif()

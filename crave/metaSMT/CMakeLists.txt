@@ -166,7 +166,7 @@ if (metaSMT_USE_picosat )
 endif()
 
 if( metaSMT_USE_lingeling )
-  find_package( Lingeling QUIET)
+  include(cmake/buildLingeling.cmake)
 endif()
 
 if (metaSMT_DOC_Doxygen)
