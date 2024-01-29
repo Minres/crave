@@ -40,19 +40,6 @@ option(CRAVE_ENABLE_EXPERIMENTAL "enable experimental extensions of CRAVE" ON)
 option(CRAVE_ENABLE_TESTS "build tests" ON)
 option(CRAVE_BUILD_EXAMPLES "build and test examples" ON)
 
-option(metaSMT_USE_CUDD ON)
-option(metaSMT_USE_Z3 ON)
-option(metaSMT_USE_SWORD OFF)
-option(metaSMT_USE_Boolector OFF)
-option(metaSMT_USE_STP OFF)
-option(metaSMT_USE_CVC4 OFF)
-option(metaSMT_USE_YICES2 OFF)
-option(metaSMT_USE_MiniSat OFF)
-option(metaSMT_USE_picosat OFF)
-option(metaSMT_USE_lingeling OFF)
-option(metaSMT_USE_Aiger OFF)
-option(metaSMT_USE_CW OFF)
-
 set(Boost_NO_BOOST_CMAKE TRUE)
 set(Boost_NO_SYSTEM_PATHS TRUE)
 
@@ -72,7 +59,6 @@ if(WITH_SYSTEMC)
 endif()
 
 add_subdirectory(metaSMT)
-
 add_subdirectory(src)
 
 if(CRAVE_ENABLE_TESTS)
@@ -84,20 +70,3 @@ if(CRAVE_BUILD_EXAMPLES)
     enable_testing()
     add_subdirectory(examples)
 endif()
-
-set(${PROJECT_NAME}_LIBS ${CMAKE_INSTALL_PREFIX}/lib/lib${PROJECT_NAME}.a ${metaSMT_LIBRARIES})
-
-get_directory_property(ALL_INCLUDES INCLUDE_DIRECTORIES)
-set(${PROJECT_NAME}_INCLUDE ${CMAKE_INSTALL_PREFIX}/include ${ALL_INCLUDES})
-
-get_directory_property(${PROJECT_NAME}_DEFS COMPILE_DEFINITIONS)
-
-
-set(CMAKE_CXX_FLAGS_PROFILING "-O0 -g -Wall -Wextra -pedantic --coverage" CACHE STRING "Flags used by the C++ compiler during maintainer builds." FORCE)
-set(CMAKE_C_FLAGS_PROFILING "${CMAKE_CXX_FLAGS_PROFILING}" CACHE STRING "Flags used by the C compiler during maintainer builds." FORCE)
-set(CMAKE_EXE_LINKER_FLAGS_PROFILING "--coverage" CACHE STRING "Flags used for linking binaries during maintainer builds." FORCE)
-set(CMAKE_SHARED_LINKER_FLAGS_PROFILING " --coverage" CACHE STRING "Flags used by the shared libraries linker during maintainer builds." FORCE)
-
-mark_as_advanced(CMAKE_CXX_FLAGS_PROFILING CMAKE_C_FLAGS_PROFILING CMAKE_EXE_LINKER_FLAGS_PROFILING CMAKE_SHARED_LINKER_FLAGS_PROFILING)
-
-set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Profiling." FORCE)
