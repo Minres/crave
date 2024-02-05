@@ -78,14 +78,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 list(INSERT CMAKE_PREFIX_PATH 0 "${CMAKE_SOURCE_DIR}/cmake")
 
-# Set the default version number, but try to calculate
-# a proper version from git.
-include(cmake/get_git_version.cmake)
-
-include(cmake/build_type.cmake)
-include(cmake/default_compliler_flags.cmake)
-include(cmake/config_file.cmake)
-
 ###  
 # Options to force disable certain solvers. 
 # set all solvers to "on" with good support and experimental or

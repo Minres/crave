@@ -8,13 +8,16 @@ FetchContent_GetProperties(z3_git)
 if(NOT z3_git_POPULATED)
   FetchContent_Populate(z3_git)
 
-  # install dir must be availble to configure time otherwise CMake will complain
-  set(z3_install_dir ${CMAKE_BINARY_DIR}/_deps/z3_git-install)
+  set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/z3)
+  if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+      # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
+      set(install_dir ${CMAKE_BINARY_DIR}/solvers/z3)
+  endif()
 
   if(NOT Z3_EXTERNAL_PROJECT_ADDED)
     execute_process(
-      COMMAND mkdir -p ${z3_install_dir}/include
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${z3_install_dir}/lib
+      COMMAND mkdir -p ${install_dir}/include
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${install_dir}/lib
       COMMAND git apply -p0 ${CMAKE_CURRENT_LIST_DIR}/z3-z3-4.6.0__permutation_matrix.patch
       WORKING_DIRECTORY ${z3_git_SOURCE_DIR}
     )
@@ -23,7 +26,7 @@ if(NOT z3_git_POPULATED)
       z3
       BUILD_IN_SOURCE = TRUE
       SOURCE_DIR ${z3_git_SOURCE_DIR}
-      CONFIGURE_COMMAND ./configure --staticlib --prefix=${z3_install_dir}
+      CONFIGURE_COMMAND ./configure --staticlib --prefix=${install_dir}
       BUILD_COMMAND make -C build -j
       INSTALL_COMMAND make -C build install -j
     )
@@ -31,10 +34,10 @@ if(NOT z3_git_POPULATED)
   endif()
 
   add_library(z3_git::z3_git INTERFACE IMPORTED)
-  target_include_directories(z3_git::z3_git INTERFACE ${z3_install_dir}/include)
+  target_include_directories(z3_git::z3_git INTERFACE ${install_dir}/include)
   target_link_libraries(z3_git::z3_git INTERFACE z3)
-  target_link_directories(z3_git::z3_git INTERFACE ${z3_install_dir}/lib)
-  message(STATUS "Use Z3 from ${z3_install_dir}")
+  target_link_directories(z3_git::z3_git INTERFACE ${install_dir}/lib)
+  message(STATUS "Use Z3 from ${install_dir}")
 
   find_package(OpenMP)
 

@@ -10,11 +10,15 @@ FetchContent_GetProperties(stp_repo)
 if(NOT stp_repo_POPULATED)
     FetchContent_Populate(stp_repo)
 
-    # install dir must be availble to configure time otherwise CMake will complain
-    set(stp_install_dir ${CMAKE_BINARY_DIR}/_deps/stp-install)
+    set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/stp)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
+        set(install_dir ${CMAKE_BINARY_DIR}/solvers/stp)
+    endif()
+
     if(NOT stp_EXTERNAL_PROJECT_ADDED)
         execute_process(
-            COMMAND mkdir -p ${stp_install_dir}/include
+            COMMAND mkdir -p ${install_dir}/include
             WORKING_DIRECTORY ${stp_repo_SOURCE_DIR}
         )
 
@@ -22,7 +26,7 @@ if(NOT stp_repo_POPULATED)
             stp
             BUILD_IN_SOURCE TRUE
             SOURCE_DIR ${stp_repo_SOURCE_DIR}
-            CMAKE_ARGS -DENABLE_PYTHON_INTERFACE=off -DONLY_SIMPLE=on -DNOCRYPTOMINISAT=on -DCMAKE_INSTALL_PREFIX=${stp_install_dir} -DMINISAT_INCLUDE_DIR=${MINISAT_INCLUDE_DIRS} -DMINISAT_LIBRARY=${MINISAT_LIBRARY_DIRS}/libminisat.so 
+            CMAKE_ARGS -DENABLE_PYTHON_INTERFACE=off -DONLY_SIMPLE=on -DNOCRYPTOMINISAT=on -DCMAKE_INSTALL_PREFIX=${install_dir} -DMINISAT_INCLUDE_DIR=${MINISAT_INCLUDE_DIRS} -DMINISAT_LIBRARY=${MINISAT_LIBRARY_DIRS}/libminisat.so 
             DEPENDS minisat_git::minisat_git
         )
 
@@ -30,8 +34,8 @@ if(NOT stp_repo_POPULATED)
     endif()
 
     add_library(stp_git::stp_git INTERFACE IMPORTED)
-    target_include_directories(stp_git::stp_git INTERFACE ${stp_install_dir}/include)
+    target_include_directories(stp_git::stp_git INTERFACE ${install_dir}/include)
     target_link_libraries(stp_git::stp_git INTERFACE stp)
-    target_link_directories(stp_git::stp_git INTERFACE ${stp_install_dir}/lib64)
-    message(STATUS "Use STP from ${stp_install_dir}")
+    target_link_directories(stp_git::stp_git INTERFACE ${install_dir}/lib64)
+    message(STATUS "Use STP from ${install_dir}")
 endif()

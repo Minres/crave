@@ -8,7 +8,12 @@ FetchContent_GetProperties(boolector_repo)
 if(NOT boolector_repo_POPULATED)
     FetchContent_Populate(boolector_repo)
 
-    set(boolector_install_dir ${CMAKE_BINARY_DIR}/_deps/boolector-install)
+    set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/boolector)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
+        set(install_dir ${CMAKE_BINARY_DIR}/solvers/boolector)
+    endif()
+
     if(NOT boolector_EXTERNAL_PROJECT_ADDED)
         execute_process(
             COMMAND ./contrib/setup-lingeling.sh 
@@ -18,7 +23,7 @@ if(NOT boolector_repo_POPULATED)
         )
 
         execute_process(
-            COMMAND ./configure.sh --prefix ${boolector_install_dir} --shared
+            COMMAND ./configure.sh --prefix ${install_dir} --shared
             WORKING_DIRECTORY ${boolector_repo_SOURCE_DIR}
             RESULT_VARIABLE CONFIGURE_RESULT
             OUTPUT_VARIABLE CONFIGURE_OUTPUT
@@ -35,8 +40,8 @@ if(NOT boolector_repo_POPULATED)
         set(boolector_EXTERNAL_PROJECT_ADDED TRUE CACHE INTERNAL "Flag indicating whether the external project has been added")
     endif()
 
-    find_package(Boolector REQUIRED HINTS ${boolector_install_dir}/lib/cmake)
-    message(STATUS "Use boolector from ${boolector_install_dir}")
+    find_package(Boolector REQUIRED HINTS ${install_dir}/lib/cmake)
+    message(STATUS "Use boolector from ${install_dir}")
 endif()
 
 
