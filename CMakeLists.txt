@@ -31,10 +31,6 @@ endif()
 find_package(SystemCLanguage REQUIRED)
 find_package(UVM-SystemC REQUIRED)
 
-set(Boost_NO_BOOST_CMAKE TRUE)
-set(Boost_NO_SYSTEM_PATHS TRUE)
-find_package(Boost REQUIRED COMPONENTS system filesystem)
-
 option(BUILD_CRAVE "Build CRAVE and metaSMT as part of the project or import it from a different location" ON)
 if(BUILD_CRAVE)
     add_subdirectory(crave)

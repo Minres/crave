@@ -42,16 +42,7 @@ option(CRAVE_BUILD_EXAMPLES "build and test examples" ON)
 
 set(Boost_NO_BOOST_CMAKE TRUE)
 set(Boost_NO_SYSTEM_PATHS TRUE)
-
-if(WIN32 AND NOT MINGW)
-    if(MSVC AND NOT MSVC_VERSION LESS 1900)
-        find_package(Boost REQUIRED)
-    else()
-        message(FATAL_ERROR "CRAVE Windows build only supports Visual Studio C++ 2015 or newer version")
-    endif()
-else()
-    find_package(Boost REQUIRED COMPONENTS system filesystem)
-endif()
+find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 if(WITH_SYSTEMC)
     find_package(SystemCLanguage REQUIRED)
