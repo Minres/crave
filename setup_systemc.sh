@@ -53,7 +53,6 @@ make install -j "$NUM_THREADS"
 popd  # go back to the original directory
 rm -rf "${SYSTEMC_VERSION}.tar.gz"
 
-export SYSTEMC_HOME=${INSTALL_PREFIX}/systemc-${SYSTEMC_VERSION}
-echo "SYSTEMC_HOME set to $SYSTEMC_HOME"
-echo "Installation complete"
+export SYSTEMC_HOME=${INSTALL_PREFIX}
+echo "Installation complete. SYSTEMC_HOME is $SYSTEMC_HOME"
 

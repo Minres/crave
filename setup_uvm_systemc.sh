@@ -8,7 +8,7 @@ if [ "$#" -eq 0 ]; then
   echo "Usage: $0 [options]"
   echo "Options:"
   echo "  -j <num_threads>    Set the number of threads for building (default: 4)"
-  echo "  --prefix <dir>      Set the installation prefix directory (default: current directory)"
+  echo "  --install <dir>      Set the installation directory (default: current directory)"
   exit 1
 fi
 
@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do
       NUM_THREADS="$2"
       shift 2
       ;;
-    --prefix)
+    --install)
       INSTALL_PREFIX="$2"
       shift 2
       ;;
@@ -52,13 +52,10 @@ echo "Build UVM-SystemC using $NUM_THREADS thread(s)"
 make -j "$NUM_THREADS"
 make install -j "$NUM_THREADS"
 
+# cleanup
 popd  # go back to uvm-systemc-1.0-beta4 directory
-
-# Cleanup
-rm -rf objdir uvm-systemc-1.0-beta4.tar.gz
-
-export UVM_SYSTEMC_HOME=$(pwd)
-echo "UVM_SYSTEMC_HOME set to $UVM_SYSTEMC_HOME"
-
 popd  # go back to the original directory
-echo "Installation complete"
+rm -rf uvm-systemc-1.0-beta4/objdir uvm-systemc-1.0-beta4.tar.gz
+
+export UVM_SYSTEMC_HOME=${INSTALL_PREFIX}
+echo "Installation complete. UVM_SYSTEMC_HOME is $UVM_SYSTEMC_HOME"
