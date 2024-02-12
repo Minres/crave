@@ -8,7 +8,7 @@ FetchContent_GetProperties(z3_git)
 if(NOT z3_git_POPULATED)
   FetchContent_Populate(z3_git)
 
-  set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/z3)
+  set(install_dir ${CMAKE_INSTALL_PREFIX})
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
       # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
       set(install_dir ${CMAKE_BINARY_DIR}/solvers/z3)

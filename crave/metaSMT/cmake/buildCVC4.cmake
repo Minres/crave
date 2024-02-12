@@ -8,7 +8,7 @@ FetchContent_GetProperties(cvc4_repo)
 if(NOT cvc4_repo_POPULATED)
     FetchContent_Populate(cvc4_repo)
 
-    set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/cvc4)
+    set(install_dir ${CMAKE_INSTALL_PREFIX})
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
         set(install_dir ${CMAKE_BINARY_DIR}/solvers/cvc4)

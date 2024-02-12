@@ -1,7 +1,15 @@
 if(NOT DEFINED MINISAT_MODULE_INCLUDED)
     set(MINISAT_MODULE_INCLUDED TRUE INTERNAL "Flag indicating whether Minisat module has already been included")
 
-    set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/minisat)
+    FetchContent_Declare(
+        minisat_repo
+        GIT_REPOSITORY https://github.com/stp/minisat.git
+        GIT_TAG releases/2.2.1
+    )
+    FetchContent_GetProperties(minisat_repo)
+    FetchContent_Populate(minisat_repo)
+
+    set(install_dir ${CMAKE_INSTALL_PREFIX})
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
         set(install_dir ${CMAKE_BINARY_DIR}/solvers/minisat)
@@ -14,9 +22,8 @@ if(NOT DEFINED MINISAT_MODULE_INCLUDED)
     if(NOT minisat_EXTERNAL_PROJECT_ADDED)
         ExternalProject_Add(
             minisat
-            GIT_REPOSITORY https://github.com/stp/minisat.git
-            GIT_TAG releases/2.2.1
-            CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${install_dir} 
+            SOURCE_DIR ${minisat_repo_SOURCE_DIR}
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${install_dir} 
         )
         set(minisat_EXTERNAL_PROJECT_ADDED TRUE CACHE INTERNAL "Flag indicating whether the external project has been added")
     endif()

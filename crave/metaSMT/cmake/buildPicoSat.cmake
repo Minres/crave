@@ -7,7 +7,7 @@ FetchContent_GetProperties(picosat_repo)
 if(NOT picosat_repo_POPULATED)
     FetchContent_Populate(picosat_repo)
 
-    set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/picosat)
+    set(install_dir ${CMAKE_INSTALL_PREFIX})
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
         set(install_dir ${CMAKE_BINARY_DIR}/solvers/picosat)

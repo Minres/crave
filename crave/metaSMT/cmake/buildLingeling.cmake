@@ -7,7 +7,7 @@ FetchContent_GetProperties(lingeling_repo)
 if(NOT lingeling_repo_POPULATED)
     FetchContent_Populate(lingeling_repo)
 
-    set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/lingeling)
+    set(install_dir ${CMAKE_INSTALL_PREFIX})
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
         set(install_dir ${CMAKE_BINARY_DIR}/solvers/lingeling)

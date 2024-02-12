@@ -8,7 +8,7 @@ FetchContent_GetProperties(boolector_repo)
 if(NOT boolector_repo_POPULATED)
     FetchContent_Populate(boolector_repo)
 
-    set(install_dir ${CMAKE_INSTALL_PREFIX}/solvers/boolector)
+    set(install_dir ${CMAKE_INSTALL_PREFIX})
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
         set(install_dir ${CMAKE_BINARY_DIR}/solvers/boolector)
