@@ -33,25 +33,11 @@ if(NOT z3_git_POPULATED)
     set(Z3_EXTERNAL_PROJECT_ADDED TRUE CACHE INTERNAL "Flag indicating whether the external project has been added")
   endif()
 
-  set(Z3_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/z3)
-
-  add_library(z3_git INTERFACE)
-  target_include_directories(z3_git INTERFACE ${install_dir}/include)
-  target_link_libraries(z3_git INTERFACE z3)
-  target_link_directories(z3_git INTERFACE ${install_dir}/lib)
+  add_library(z3_git::z3_git INTERFACE IMPORTED)
+  target_include_directories(z3_git::z3_git INTERFACE ${install_dir}/include)
+  target_link_libraries(z3_git::z3_git INTERFACE z3)
+  target_link_directories(z3_git::z3_git INTERFACE ${install_dir}/lib)
   message(STATUS "Use Z3 from ${install_dir}")
-
-  include(GNUInstallDirs)
-  install(TARGETS z3_git EXPORT z3_git-targets
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  )
-  add_library(z3_git::z3_git ALIAS z3_git)
-  include(CMakePackageConfigHelpers)
-
-  install(EXPORT z3_git-targets
-    DESTINATION ${Z3_CMAKE_CONFIG_DIR})
 
   find_package(OpenMP)
 

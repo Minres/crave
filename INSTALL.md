@@ -12,10 +12,8 @@ Make sure all pre install requirements of CRAVE and UVM-SystemC are met:
 * g++ (at least v4.7.2)
 * SystemC: 
   the environment variable SYSTEMC_HOME must show to the SystemC installation. 
-  If SystemC is not already installed on your system, use `./setup_systemc.sh [NUM_THREADS]` script to download, build, and install it.
 * UVM-SystemC:
   the environment variable UVM_SYSTEMC_HOME must show to the UVM-SystemC installation. 
-  If UVM-SystemC is not already installed on your system, use `./setup_uvm_systemc.sh [NUM_THREADS]` script to download, build, and install it.
 * Boost (at least v1.50.0 and the environment variable BOOST_ROOT must be set accordingly)
 * zlib development libraries (e.g. zlib1g-dev).
 
@@ -27,7 +25,12 @@ For more detailed instructions , please refer to the CRAVE README or contact us.
 
 ## Installation
 
-To install and run the example, use the buildscript on the toplevel of this repository. It currently executes three common tasks:
+To install and run the example, use the buildscript on the toplevel of this repository. 
+The installation of crave2uvm requires the libraries systemc and uvm-systemc, they are automatically installed by this script if the environment variables SYSTEMC_HOME and UVM_SYSTEMC_HOME are not set.
+
+`./buildscript --install <INSTALL_DIR>`
+
+Or set SYSTEMC_HOME and UVM_SYSTEMC_HOME and run cmake:
 
 1. Minimal CRAVE setup with CUDD and Z3: `cmake --preset CUDD-Z3 .`
 
