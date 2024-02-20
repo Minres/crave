@@ -51,6 +51,7 @@ target_include_directories(crave2uvm INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
     $<INSTALL_INTERFACE:include>
 )
+target_link_libraries(crave2uvm INTERFACE crave)
 
 # Set the default installation directory to the build directory
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

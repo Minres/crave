@@ -33,7 +33,7 @@ target_include_directories(metaSMT PUBLIC
 )
 
 if(metaSMT_USE_Z3)
-  target_link_libraries(metaSMT PUBLIC z3_git::z3_git)
+  target_link_libraries(metaSMT PUBLIC z3_git)
   target_compile_definitions(metaSMT PRIVATE metaSMT_Z3_ULL_API)
 endif()
 
@@ -97,7 +97,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/metaSMT
     FILES_MATCHING PATTERN "*.hpp"
 )
 
-set(metaSMT_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake)
+set(metaSMT_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/metaSMT)
 include(CMakePackageConfigHelpers)
 
 install(EXPORT metasmt-targets

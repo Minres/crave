@@ -1,0 +1,146 @@
+#!/bin/bash
+
+set -e  # Exit immediately if any command returns a non-zero status
+
+log() {
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" | tee -a "${LOG_FILE}"
+}
+
+check_env_variables() {
+    local error_msg=""
+    if [[ -z "$CXX" ]]; then
+        error_msg+="CXX is not set. It can be set using following command: export CXX=$(type -p g++)' -std=c++17' \n"
+    fi
+
+    if [[ -z "$CC" ]]; then
+        error_msg+="CC is not set. "
+    fi
+
+    if [[ -z "$BOOST_ROOT" ]]; then
+        error_msg+="BOOST_ROOT is not set. "
+    fi
+
+    if [[ -n "$error_msg" ]]; then
+        echo -e "Error: ${error_msg} Please set the required environment variables before running the script." >&2
+        exit 1
+    fi
+}
+
+check_centos_env() {
+    local os_info
+    os_info="$(grep -oP '(?<=^ID=).+' /etc/os-release)"
+
+    if [[ "$os_info" == "centos" ]]; then
+        echo "Warning: You are on CentOS. Please run 'scl enable devtoolset-7 rh-python38 bash' to enable the required environment." >&2
+    fi
+    echo "Don't forget to load: module load tools/gcc/7.3.0 tools/cmake/3.20 modules"
+}
+
+display_help() {
+    echo "Usage: $0 [OPTIONS]"
+    echo "Options:"
+    echo "  -j <num_threads>    Set the number of threads for building (default: 4)"
+    echo "  --install DIR     Installation directory (default: pwd)"
+    echo "  --help            Display this help message"
+    echo ""
+    echo "crave2uvm installation requires systemc and uvm-systemc libraries. Which can be installed with following scripts:"
+    echo "  ./setup_systemc.sh --install /opt/shared/systemc/CentOS/2.3.4-cxx17"
+    echo "  ./setup_uvm_systemc.sh --install /opt/shared/systemc/CentOS/2.3.4-cxx17"
+}
+
+
+# Set default values
+NUM_THREADS=4  
+CMAKE_INSTALL_PREFIX="$(pwd)"
+LOG_FILE="crave2uvm_build.log"
+# Truncate the log file before each run
+> "${LOG_FILE}"
+
+# Parse command-line options
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -j)
+            NUM_THREADS="$2"
+            shift 2
+            ;;
+        --install)
+            if [[ -n "$2" ]]; then
+                CMAKE_INSTALL_PREFIX="$2"
+                shift 2
+            else
+                echo "Error: Argument for --install is missing." >&2
+                exit 1
+            fi
+            ;;
+        --help)
+            display_help
+            exit 0
+            ;;
+        *)
+            echo "Error: Unknown option '$1'" >&2
+            display_help
+            exit 1
+            ;;
+    esac
+done
+
+check_centos_env
+check_env_variables
+
+# Find or build SystemC and UVM-SystemC
+if [[ -z "$SYSTEMC_HOME" ]]; then
+    SYSTEMC_VERSION="2.3.4"
+
+    log "Installing SystemC"
+    wget https://github.com/accellera-official/systemc/archive/refs/tags/${SYSTEMC_VERSION}.tar.gz
+    tar xvzf "${SYSTEMC_VERSION}.tar.gz"
+    pushd "systemc-${SYSTEMC_VERSION}"
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" -DCMAKE_CXX_STANDARD=17 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=OFF $CMAKE_ARGS .
+    make -j "$NUM_THREADS"
+    make install -j "$NUM_THREADS"
+
+    popd  # go back to the original directory
+    rm -rf "${SYSTEMC_VERSION}.tar.gz"
+
+    export SYSTEMC_HOME=${CMAKE_INSTALL_PREFIX}
+    log "Installation complete. SYSTEMC_HOME is $SYSTEMC_HOME"
+fi
+
+if [[ -z "$UVM_SYSTEMC_HOME" ]]; then
+    log "Installing UVM-SystemC"
+    wget https://www.accellera.org/images/downloads/standards/systemc/uvm-systemc-1.0-beta4.tar.gz
+    tar xvzf uvm-systemc-1.0-beta4.tar.gz
+    pushd uvm-systemc-1.0-beta4
+
+    export CXXFLAGS=-std=c++17
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SYSTEMC_HOME/lib-linux64:$SYSTEMC_HOME/lib-linux:$SYSTEMC_HOME/lib64
+
+    # Configure and build
+    config/bootstrap
+    mkdir -p objdir
+    pushd objdir
+    ../configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=${SYSTEMC_HOME} --prefix=${CMAKE_INSTALL_PREFIX}
+
+    log "Build UVM-SystemC using $NUM_THREADS thread(s)"
+    make -j "$NUM_THREADS"
+    make install -j "$NUM_THREADS"
+
+    # cleanup
+    popd  # go back to uvm-systemc-1.0-beta4 directory
+    popd  # go back to the original directory
+    rm -rf uvm-systemc-1.0-beta4.tar.gz
+
+    export UVM_SYSTEMC_HOME=${CMAKE_INSTALL_PREFIX}
+    log "Installation complete. UVM_SYSTEMC_HOME is $UVM_SYSTEMC_HOME"
+fi
+
+# Run cmake preset
+log "Running cmake preset..."
+cmake --preset ALL -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" |& tee -a "${LOG_FILE}" || { log "Error: Failed to run cmake preset."; exit 1; }
+pushd build/ALL || { log "Error: Failed to navigate to build directory."; exit 1; }
+
+log "Building and installing using Ninja..."
+ninja install |& tee -a "${LOG_FILE}" 
+
+popd
+

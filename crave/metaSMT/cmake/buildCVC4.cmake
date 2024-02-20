@@ -26,7 +26,7 @@ if(NOT cvc4_repo_POPULATED)
             BUILD_IN_SOURCE TRUE
             SOURCE_DIR ${cvc4_repo_SOURCE_DIR}
             CONFIGURE_COMMAND contrib/get-antlr-3.4
-            COMMAND ./configure.sh --prefix=${install_dir}
+            COMMAND ./configure.sh --python3 --prefix=${install_dir}
             BUILD_COMMAND make -C build -j
             INSTALL_COMMAND make -C build install -j
         )
