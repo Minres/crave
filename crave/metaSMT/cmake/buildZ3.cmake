@@ -1,3 +1,4 @@
+# pull the git repo
 FetchContent_Declare(
   z3_git
   GIT_REPOSITORY https://github.com/Z3Prover/z3.git
@@ -12,17 +13,16 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
     set(install_dir ${CMAKE_BINARY_DIR}/solvers/z3)
 endif()
-
+# check for prerequisites
 find_package(Threads REQUIRED)
 find_package(OpenMP)
-
 if(OPENMP_FOUND)
   message(STATUS "Use Z3 with OpenMP")
 else()
   set(Z3_OPENMP --noomp)
   message(STATUS "Use Z3 without OpenMP")
 endif()
-
+# build the Z3 library
 add_custom_command(
   OUTPUT ${install_dir}/lib/libz3.a
   WORKING_DIRECTORY ${z3_git_SOURCE_DIR}
@@ -35,6 +35,7 @@ add_custom_command(
   USES_TERMINAL
 )
 add_custom_target(z3_git DEPENDS ${install_dir}/lib/libz3.a)
+# declare the z3 target
 add_library(z3 INTERFACE)
 target_include_directories(z3 INTERFACE ${install_dir}/include)
 target_link_libraries(z3 INTERFACE ${install_dir}/lib/libz3.a)
@@ -45,9 +46,7 @@ target_link_libraries(z3 INTERFACE Threads::Threads)
 target_link_directories(z3 INTERFACE ${install_dir}/lib)
 add_dependencies(z3 DEPENDS z3_git)
 add_library(z3::z3 ALIAS z3)
-
-message(STATUS "Use Z3 from ${install_dir}")
-
+# install the target
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 set(z3_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/z3)
