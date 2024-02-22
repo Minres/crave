@@ -8,3 +8,8 @@ logs/
 doc/crave-doxygen/
 crave_package_deps.tar.gz
 crave2uvm_build.log
+/systemc-2.3.4
+/uvm-systemc-1.0-beta4
+/*.tar.gz
+/*.log
+

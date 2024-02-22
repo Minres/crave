@@ -33,12 +33,12 @@ target_include_directories(metaSMT PUBLIC
 )
 
 if(metaSMT_USE_Z3)
-  target_link_libraries(metaSMT PUBLIC z3_git::z3_git)
+  target_link_libraries(metaSMT PUBLIC z3::z3)
   target_compile_definitions(metaSMT PRIVATE metaSMT_Z3_ULL_API)
 endif()
 
 if(metaSMT_USE_CUDD)
-  target_link_libraries(metaSMT PUBLIC cudd_git::cudd_git)
+  target_link_libraries(metaSMT PUBLIC cudd::cudd)
 endif()
 
 if (metaSMT_USE_YICES2)

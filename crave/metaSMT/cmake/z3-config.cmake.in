@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET z3::z3)
+    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../z3/z3_git-targets.cmake")
+        include("${CMAKE_CURRENT_LIST_DIR}/../z3/z3_git-targets.cmake")
+    endif()
+    include("${CMAKE_CURRENT_LIST_DIR}/z3-targets.cmake")
+    add_library(z3::z3 ALIAS z3)
+endif()
+
+set(z3_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include")
+set(z3_lIBRARIES z3::z3)

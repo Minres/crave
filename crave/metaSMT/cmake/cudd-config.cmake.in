@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET cudd::cudd)
+    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../cudd/cudd_git-targets.cmake")
+        include("${CMAKE_CURRENT_LIST_DIR}/../cudd/cudd_git-targets.cmake")
+    endif()
+    include("${CMAKE_CURRENT_LIST_DIR}/cudd-targets.cmake")
+    add_library(cudd::cudd ALIAS cudd)
+endif()
+
+set(cudd_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include")
+set(cudd_lIBRARIES cudd::cudd)
