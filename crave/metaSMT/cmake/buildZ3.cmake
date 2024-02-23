@@ -5,7 +5,7 @@ FetchContent_Declare(
   GIT_TAG z3-4.6.0
 )
 FetchContent_GetProperties(z3_git)
-if(NOT riscvfw_POPULATED)
+if(NOT z3_git_POPULATED)
     FetchContent_Populate(z3_git)
 endif()
 set(install_dir ${CMAKE_INSTALL_PREFIX})

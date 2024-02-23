@@ -46,7 +46,8 @@ if (metaSMT_USE_YICES2)
 endif()
     
 if (metaSMT_USE_CVC4)
-  target_link_libraries(metaSMT PUBLIC cvc4_git::cvc4_git)
+  target_link_libraries(metaSMT PUBLIC CVC4::cvc4)
+  target_compile_definitions(metaSMT INTERFACE CVC4_WITHOUT_KIND_IFF)
 endif()
 
 if(metaSMT_USE_STP)
