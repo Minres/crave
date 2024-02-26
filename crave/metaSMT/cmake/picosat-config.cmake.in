@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET picosat)
+    include("${CMAKE_CURRENT_LIST_DIR}/picosat-targets.cmake")
+    add_library(picosat::picosat ALIAS PicoSAT_libpicosat)
+endif()
+
+set(picosat_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include")
+set(picosat_lIBRARIES picosat::picosat)

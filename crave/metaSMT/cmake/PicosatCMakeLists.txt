@@ -1,6 +1,6 @@
 project(PicoSAT)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.16)
 
 set(STATIC_OR_SHARED SHARED CACHE STRING "Build STATIC or SHARED libaries")
 
@@ -19,6 +19,10 @@ add_library(PicoSAT_libpicosat
   version.c
 )
 set_target_properties(PicoSAT_libpicosat PROPERTIES OUTPUT_NAME picosat)
+target_include_directories(PicoSAT_libpicosat INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
 
 add_executable(PicoSAT_picosat
   picosat.c
@@ -39,45 +43,37 @@ SET_TARGET_PROPERTIES( PicoSAT_picomus PROPERTIES
   OUTPUT_NAME picomus
 )
   
+# install the target
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+set(picosat_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/picosat)
 
-file(WRITE ${PROJECT_BINARY_DIR}/PicoSATConfig.cmake 
-"set(PicoSAT_FOUND 1)
-set(PicoSAT_VERSION ${PicoSAT_VERSION})
-get_filename_component(PicoSAT_CONFIG_DIR \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)
-set(PicoSAT_INCLUDE_DIR \${PicoSAT_CONFIG_DIR}/../../include)
-set(PicoSAT_LIBRARIES PicoSAT_libpicosat)
-include(\${PicoSAT_CONFIG_DIR}/PicoSAT.cmake)
-")
-file(WRITE ${PROJECT_BINARY_DIR}/PicoSATConfigVersion.cmake 
-"if(\"\${PACKAGE_FIND_VERSION}\" VERSION_EQUAL ${PicoSAT_VERSION})
-set(PACKAGE_VERSION_EXACT 1)
-set(PACKAGE_VERSION_COMPATIBLE 1)
-endif(\"\${PACKAGE_FIND_VERSION}\" VERSION_EQUAL ${PicoSAT_VERSION})
-")
-## create libPicoSAT config file for internal use
-file(WRITE ${PROJECT_BINARY_DIR}/PicoSAT.cmake 
-"set(PicoSAT_INCLUDE_DIR 
-  ${PROJECT_SOURCE_DIR}/include
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/picosat.h
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/picosat
 )
-")
-## export target with install
-INSTALL( FILES
-  ${PROJECT_BINARY_DIR}/PicoSATConfig.cmake
-  ${PROJECT_BINARY_DIR}/PicoSATConfigVersion.cmake
-  DESTINATION share/PicoSAT)
-install(EXPORT PicoSAT DESTINATION share/PicoSAT)
-
 install(TARGETS 
   PicoSAT_libpicosat
   PicoSAT_picosat
-  PicoSAT_picomus
-  EXPORT PicoSAT
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  ARCHIVE DESTINATION lib
+  PicoSAT_picomus EXPORT picosat-targets)
+
+install(
+  EXPORT picosat-targets
+  DESTINATION ${picosat_CMAKE_CONFIG_DIR}
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/picosat-config-version.cmake
+    VERSION ${PicoSAT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/picosat-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/picosat-config.cmake
+    INSTALL_DESTINATION ${picosat_CMAKE_CONFIG_DIR}
 )
 
 install(FILES
-  picosat.h
-  DESTINATION include 
-)
+    ${CMAKE_CURRENT_BINARY_DIR}/picosat-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/picosat-config-version.cmake
+    DESTINATION ${picosat_CMAKE_CONFIG_DIR})

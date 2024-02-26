@@ -59,7 +59,7 @@ if(metaSMT_USE_MiniSat)
 endif()
 
 if(metaSMT_USE_picosat)
-  target_link_libraries(metaSMT PUBLIC picosat_git::picosat_git)
+  target_link_libraries(metaSMT PUBLIC picosat)
 endif()
 
 if(metaSMT_USE_lingeling)
@@ -67,7 +67,7 @@ if(metaSMT_USE_lingeling)
 endif()
 
 if(metaSMT_USE_Aiger)
-  target_link_libraries(metaSMT PUBLIC aiger_git::aiger_git)
+  target_link_libraries(metaSMT PUBLIC aiger)
 endif()
 
 if(metaSMT_USE_Boolector)
