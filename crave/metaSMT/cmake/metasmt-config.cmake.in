@@ -5,6 +5,7 @@ find_package(cudd REQUIRED)
 find_package(z3 REQUIRED)
 find_package(Boolector)
 find_package(CVC4)
+find_package(yices2)
 
 if(NOT TARGET metaSMT::metaSMT)
     include("${CMAKE_CURRENT_LIST_DIR}/metasmt-targets.cmake")

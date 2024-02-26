@@ -42,7 +42,7 @@ if(metaSMT_USE_CUDD)
 endif()
 
 if (metaSMT_USE_YICES2)
-  target_link_libraries(metaSMT PUBLIC yices2_git::yices2_git)
+  target_link_libraries(metaSMT PUBLIC yices2::yices2)
 endif()
     
 if (metaSMT_USE_CVC4)
