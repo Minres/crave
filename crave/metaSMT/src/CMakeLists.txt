@@ -51,11 +51,11 @@ if (metaSMT_USE_CVC4)
 endif()
 
 if(metaSMT_USE_STP)
-  target_link_libraries(metaSMT PUBLIC stp_git::stp_git)
+  target_link_libraries(metaSMT PUBLIC stp)
 endif()
 
-if(metaSMT_USE_MiniSat)
-  target_link_libraries(metaSMT PUBLIC minisat_git::minisat_git)
+if(metaSMT_USE_MiniSat OR metaSMT_USE_STP)
+  target_link_libraries(metaSMT PUBLIC minisat)
 endif()
 
 if(metaSMT_USE_picosat)
