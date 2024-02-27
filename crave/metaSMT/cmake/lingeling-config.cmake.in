@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET lingeling)
+    include("${CMAKE_CURRENT_LIST_DIR}/lingeling-targets.cmake")
+    add_library(lingeling::lingeling ALIAS lingeling)
+endif()
+
+set(lingeling_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include")
+set(lingeling_lIBRARIES lingeling::lingeling)

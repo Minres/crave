@@ -1,6 +1,6 @@
 project(Lingeling)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.16)
 
 set(STATIC_OR_SHARED SHARED CACHE STRING "Build STATIC or SHARED libaries")
 
@@ -10,9 +10,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/code)
 
 set(HOSTNAME $ENV{HOSTNAME})
-if("${CMAKE_VERSION}" VERSION_GREATER 2.8.10)
-  STRING(TIMESTAMP COMPILATION_TIMESTAMP "%Y-%m-%dT%H:%M:%S")
-endif()
+STRING(TIMESTAMP COMPILATION_TIMESTAMP "%Y-%m-%dT%H:%M:%S")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -DNDBLSCR -DNLGLOG -DNDEBUG -DNCHKSOL -DNLGLPICOSAT -DNLGLDRUPLIG -DNLGLYALSAT")
 
 configure_file(
@@ -28,13 +26,17 @@ configure_file(
 )
 
 
-add_library(Lingeling_liblingeling
+add_library(lingeling
   ${STATIC_OR_SHARED}
   code/lglbnr.c
   code/lgldimacs.c
   code/lglib.c
 )
-set_target_properties(Lingeling_liblingeling PROPERTIES OUTPUT_NAME lingeling)
+set_target_properties(lingeling PROPERTIES OUTPUT_NAME lingeling)
+target_include_directories(lingeling PUBLIC 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/code>
+  $<INSTALL_INTERFACE:include>
+)
 
 add_executable(Lingeling_lingeling
   code/lglbnr.c
@@ -48,49 +50,40 @@ SET_TARGET_PROPERTIES( Lingeling_lingeling PROPERTIES
   OUTPUT_NAME lingeling
 )
 
+# install the target
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+set(lingeling_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/lingeling)
 
-file(WRITE ${PROJECT_BINARY_DIR}/LingelingConfig.cmake
-"set(Lingeling_FOUND 1)
-set(Lingeling_VERSION ${Lingeling_VERSION})
-get_filename_component(Lingeling_CONFIG_DIR \${CMAKE_CURRENT_LIST_FILE} PATH)
-set(Lingeling_INCLUDE_DIR \${Lingeling_CONFIG_DIR}/../../include)
-set(Lingeling_LIBRARIES Lingeling_liblingeling)
-include(\"\${Lingeling_CONFIG_DIR}/Lingeling.cmake\" )
-")
-file(WRITE ${PROJECT_BINARY_DIR}/LingelingConfigVersion.cmake
-"if(\"\${PACKAGE_FIND_VERSION}\" VERSION_EQUAL ${Lingeling_VERSION})
-set(PACKAGE_VERSION_EXACT 1)
-set(PACKAGE_VERSION_COMPATIBLE 1)
-endif(\"\${PACKAGE_FIND_VERSION}\" VERSION_EQUAL ${Lingeling_VERSION})
-")
-## create libLingeling config file for internal use
-file(WRITE ${PROJECT_BINARY_DIR}/Lingeling.cmake
-"set(Lingeling_INCLUDE_DIR
-  ${PROJECT_SOURCE_DIR}/include
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/code/lglcfg.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/code/lglcflags.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/code/lgldimacs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/code/lglib.h
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/lingeling
 )
-")
-## export target with install
-INSTALL( FILES
-  ${PROJECT_BINARY_DIR}/LingelingConfig.cmake
-  ${PROJECT_BINARY_DIR}/LingelingConfigVersion.cmake
-  DESTINATION share/Lingeling)
-install(EXPORT Lingeling DESTINATION share/Lingeling)
-
-install(TARGETS
-  Lingeling_liblingeling
+install(TARGETS 
+  lingeling
   Lingeling_lingeling
-  EXPORT Lingeling
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  ARCHIVE DESTINATION lib
+  EXPORT lingeling-targets)
+
+install(
+  EXPORT lingeling-targets
+  DESTINATION ${lingeling_CMAKE_CONFIG_DIR}
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/lingeling-config-version.cmake
+    VERSION ${Lingeling_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/lingeling-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/lingeling-config.cmake
+    INSTALL_DESTINATION ${lingeling_CMAKE_CONFIG_DIR}
 )
 
 install(FILES
-  code/lglcfg.h
-  code/lglcflags.h
-  code/lgldimacs.h
-  code/lglib.h
-  DESTINATION include
-)
-
-# vim: sw=2 tabstop=2 expandtab:
+    ${CMAKE_CURRENT_BINARY_DIR}/lingeling-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/lingeling-config-version.cmake
+    DESTINATION ${lingeling_CMAKE_CONFIG_DIR})
