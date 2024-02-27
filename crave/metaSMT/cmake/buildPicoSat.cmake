@@ -10,7 +10,6 @@ endif()
 
 execute_process(
     COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/PicosatCMakeLists.txt CMakeLists.txt
-    COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/picosat-config.cmake.in .
     WORKING_DIRECTORY ${picosat_repo_SOURCE_DIR}
 )
 

@@ -77,8 +77,26 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion
 )
 
+# Generate the config file content
+set(CONFIG_CONTENT "
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET lingeling)
+    include(\"\${CMAKE_CURRENT_LIST_DIR}/lingeling-targets.cmake\")
+    add_library(lingeling::lingeling ALIAS lingeling)
+endif()
+
+set(lingeling_INCLUDE_DIRS \"\${PACKAGE_PREFIX_DIR}/include\")
+set(lingeling_LIBRARIES lingeling::lingeling)
+")
+
+# Write the content to the config file
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/lingeling-config.cmake.in ${CONFIG_CONTENT})
+
+# Configure package config file
 configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/lingeling-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/lingeling-config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/lingeling-config.cmake
     INSTALL_DESTINATION ${lingeling_CMAKE_CONFIG_DIR}
 )

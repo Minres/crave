@@ -13,13 +13,12 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/config.h
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(PicoSAT_libpicosat  
+add_library(picosat  
   ${STATIC_OR_SHARED}
   picosat.c
   version.c
 )
-set_target_properties(PicoSAT_libpicosat PROPERTIES OUTPUT_NAME picosat)
-target_include_directories(PicoSAT_libpicosat INTERFACE
+target_include_directories(picosat INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:include>
 )
@@ -52,7 +51,7 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/picosat.h
     DESTINATION ${CMAKE_INSTALL_PREFIX}/include/picosat
 )
 install(TARGETS 
-  PicoSAT_libpicosat
+  picosat
   PicoSAT_picosat
   PicoSAT_picomus EXPORT picosat-targets)
 
@@ -67,8 +66,26 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion
 )
 
+
+# Generate the config file content
+set(CONFIG_CONTENT "
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET picosat)
+    include(\"\${CMAKE_CURRENT_LIST_DIR}/picosat-targets.cmake\")
+    add_library(picosat::picosat ALIAS picosat)
+endif()
+
+set(picosat_INCLUDE_DIRS \"\${PACKAGE_PREFIX_DIR}/include\")
+set(picosat_LIBRARIES picosat::picosat)
+")
+
+# Write the content to the config file
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/picosat-config.cmake.in ${CONFIG_CONTENT})
+
 configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/picosat-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/picosat-config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/picosat-config.cmake
     INSTALL_DESTINATION ${picosat_CMAKE_CONFIG_DIR}
 )

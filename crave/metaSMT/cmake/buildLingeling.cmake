@@ -12,7 +12,6 @@ execute_process(
     COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/LingelingCMakeLists.txt CMakeLists.txt
     COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/lglcfg.h.in.cmake .
     COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/lglcflags.h.in.cmake .
-    COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/lingeling-config.cmake.in .
     WORKING_DIRECTORY ${lingeling_repo_SOURCE_DIR}
 )
 

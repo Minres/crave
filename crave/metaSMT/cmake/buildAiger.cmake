@@ -10,7 +10,6 @@ endif()
 
 execute_process(
     COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/AigerCMakeLists.txt CMakeLists.txt
-    COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/aiger-config.cmake.in .
     WORKING_DIRECTORY ${aiger_repo_SOURCE_DIR}
 )
 
