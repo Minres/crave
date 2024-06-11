@@ -37,7 +37,7 @@
           "metaSMT_USE_Boolector": "ON",
           "metaSMT_USE_CVC4": "ON",
           "metaSMT_USE_MiniSat": "ON",
-          "metaSMT_USE_STP": "ON",
+          "metaSMT_USE_STP": "OFF",
           "metaSMT_USE_Aiger": "ON",
           "metaSMT_USE_lingeling": "ON",
           "metaSMT_USE_picosat": "ON"
