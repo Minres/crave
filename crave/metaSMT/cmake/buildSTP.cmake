@@ -9,9 +9,9 @@ if(NOT stp_repo_POPULATED)
     FetchContent_Populate(stp_repo)
 endif()
 
-option(ENABLE_PYTHON_INTERFACE OFF)
-option(ONLY_SIMPLE ON)
-option(NOCRYPTOMINISAT ON)
+set(ENABLE_PYTHON_INTERFACE OFF CACHE BOOL "Disable python IF" FORCE)
+set(ONLY_SIMPLE ON CACHE BOOL "No Boost needed" FORCE)
+set(NOCRYPTOMINISAT ON CACHE BOOL "No cryptominisat" FORCE)
 add_subdirectory(${stp_repo_SOURCE_DIR} ${CMAKE_BINARY_DIR}/stp)
 target_include_directories(stp PUBLIC 
   $<BUILD_INTERFACE:${stp_repo_SOURCE_DIR}/include>
