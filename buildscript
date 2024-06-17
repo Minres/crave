@@ -16,10 +16,6 @@ check_env_variables() {
         error_msg+="CC is not set. "
     fi
 
-    if [[ -z "$BOOST_ROOT" ]]; then
-        error_msg+="BOOST_ROOT is not set. "
-    fi
-
     if [[ -n "$error_msg" ]]; then
         echo -e "Error: ${error_msg} Please set the required environment variables before running the script." >&2
         exit 1

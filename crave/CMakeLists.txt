@@ -42,8 +42,6 @@ option(CRAVE_ENABLE_EXPERIMENTAL "enable experimental extensions of CRAVE" ON)
 option(CRAVE_ENABLE_TESTS "build tests" ON)
 option(CRAVE_BUILD_EXAMPLES "build and test examples" ON)
 
-set(Boost_NO_BOOST_CMAKE TRUE)
-set(Boost_NO_SYSTEM_PATHS TRUE)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 if(WITH_SYSTEMC)
