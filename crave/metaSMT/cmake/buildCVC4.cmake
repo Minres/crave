@@ -1,3 +1,5 @@
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/buildGMP.cmake)
+
 FetchContent_Declare(
     cvc4_repo
     GIT_REPOSITORY https://github.com/CVC4/CVC4-archived.git
@@ -17,7 +19,7 @@ endif()
 
 execute_process(
   WORKING_DIRECTORY ${cvc4_repo_SOURCE_DIR}
-  COMMAND bash -c "./contrib/get-antlr-3.4 && ./configure.sh --python3 --prefix=${install_dir} && make -C build install -j"
+  COMMAND bash -c "./contrib/get-antlr-3.4 && ./configure.sh --python3 --prefix=${install_dir} --gmp-dir=${GMP_INSTALL_DIR} && make -C build install -j"
   RESULT_VARIABLE CVC4_RESULT
   ECHO_OUTPUT_VARIABLE
   ECHO_ERROR_VARIABLE

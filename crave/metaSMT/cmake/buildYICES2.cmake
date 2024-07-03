@@ -1,3 +1,37 @@
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/buildGMP.cmake)
+
+# Fetch and build gperf
+FetchContent_Declare(
+    gperf_repo
+    URL https://ftp.gnu.org/pub/gnu/gperf/gperf-3.1.tar.gz
+)
+FetchContent_GetProperties(gperf_repo)
+
+if(NOT gperf_repo_POPULATED)
+    FetchContent_Populate(gperf_repo)
+endif()
+
+set(GPERF_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+
+execute_process(
+  WORKING_DIRECTORY ${gperf_repo_SOURCE_DIR}
+  COMMAND bash -c "./configure --prefix=${GPERF_INSTALL_DIR} && make -j && make install"
+  RESULT_VARIABLE GPERF_RESULT
+  OUTPUT_VARIABLE GPERF_OUTPUT
+  ERROR_VARIABLE GPERF_ERROR
+)
+
+# Check the result of the command
+if(NOT GPERF_RESULT EQUAL 0)
+  message(FATAL_ERROR "Failed to build gperf: ${GPERF_OUTPUT} ${GPERF_ERROR}")
+endif()
+
+# Find the gperf executable
+find_program(GPERF_EXECUTABLE gperf HINTS ${GPERF_INSTALL_DIR}/bin)
+if(NOT GPERF_EXECUTABLE)
+  message(FATAL_ERROR "gperf executable not found")
+endif()
+
 FetchContent_Declare(
     yices2_repo
     GIT_REPOSITORY https://github.com/SRI-CSL/yices2.git
@@ -19,7 +53,7 @@ add_custom_command(
     OUTPUT ${install_dir}/lib/libyices.a
     WORKING_DIRECTORY ${yices2_repo_SOURCE_DIR}
     COMMAND autoconf
-    COMMAND ./configure --prefix=${install_dir}
+    COMMAND ./configure --prefix=${install_dir}  GPERF=${GPERF_EXECUTABLE} CPPFLAGS=-I${GMP_INSTALL_DIR}/include LDFLAGS=-L${GMP_INSTALL_DIR}/lib
     COMMAND make -j
     COMMAND make install -j
     COMMENT "Building Yicies library"
