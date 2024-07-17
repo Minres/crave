@@ -28,6 +28,7 @@ source .venv/bin/activate
 # install conan 2
 pip install --upgrade pip
 pip install conan
+conan profile detect --force
 # install Boost
 conan install . --output-folder=build/ALL --build=missing
 

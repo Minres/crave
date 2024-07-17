@@ -47,6 +47,12 @@ if(NOT TARGET gmp)
         DESTINATION ${gmp_CMAKE_CONFIG_DIR}
     )
 
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/gmp-config-version.cmake
+        VERSION 6.2.1
+        COMPATIBILITY AnyNewerVersion
+    )
+
     configure_package_config_file(
         ${CMAKE_CURRENT_LIST_DIR}/gmp-config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/gmp-config.cmake

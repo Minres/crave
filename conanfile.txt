@@ -6,7 +6,5 @@ CMakeDeps
 CMakeToolchain
 
 [options]
-boost:shared=False
+boost/*:shared=False
 
-[settings]
-build_type=RelWithDebInfo
