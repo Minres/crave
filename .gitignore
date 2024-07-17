@@ -12,4 +12,4 @@ crave2uvm_build.log
 /uvm-systemc-1.0-beta4
 /*.tar.gz
 /*.log
-
+.venv

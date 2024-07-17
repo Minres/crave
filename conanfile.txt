@@ -1,0 +1,12 @@
+[requires]
+boost/1.75.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[options]
+boost:shared=False
+
+[settings]
+build_type=RelWithDebInfo

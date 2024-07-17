@@ -107,7 +107,7 @@ install(EXPORT metasmt-targets
 
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/metasmt-config-version.cmake
-    VERSION ${PROJECT_VERSION}
+    VERSION ${META_SMT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
 

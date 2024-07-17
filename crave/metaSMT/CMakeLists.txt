@@ -26,6 +26,8 @@
 PROJECT(metaSMT VERSION 4.0 LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.20)
 
+set(META_SMT_VERSION ${PROJECT_VERSION} CACHE STRING "metaSMT project version")
+
 option(metaSMT_REQUIRE_CXX11 "make C++11 a requirement" on)
 
 if ( NOT metaSMT_REQUIRE_CXX11 AND WIN32 )
