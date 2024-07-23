@@ -42,7 +42,7 @@ option(CRAVE_ENABLE_EXPERIMENTAL "enable experimental extensions of CRAVE" ON)
 option(CRAVE_ENABLE_TESTS "build tests" ON)
 option(CRAVE_BUILD_EXAMPLES "build and test examples" ON)
 
-find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(Boost REQUIRED COMPONENTS system)
 
 if(WITH_SYSTEMC)
     find_package(SystemCLanguage REQUIRED)

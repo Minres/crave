@@ -6,6 +6,13 @@ log() {
     echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" | tee -a "${LOG_FILE}"
 }
 
+export CXX_STD=17
+export CC=$(type -p gcc)
+export CXX=$(type -p g++)
+BOOST_SETTINGS="link=static cxxflags='-std=c++${CXX_STD}'"
+############################################################################################
+#
+############################################################################################
 check_env_variables() {
     local error_msg=""
     if [[ -z "$CXX" ]]; then
@@ -92,6 +99,24 @@ done
 check_centos_env
 check_env_variables
 
+if [[ -z "$BOOST_ROOT" ]]; then
+    log "BOOST_ROOT is not set. Installing Boost..."
+        DISTRO=$(lsb_release -i -s)
+    [ "$DISTRO" == "Ubuntu" ] || BOOST_LIBDIR=--libdir=${CMAKE_INSTALL_PREFIX}/lib64
+    export BOOST_LIB_EXCLUDE=python,wave,graph,graph_parallel
+
+    if [ ! -d boost_1_85_0 ]; then
+        [ -f boost_1_85_0.tar.bz2 ] || wget https://archives.boost.io/release/1.85.0/source/boost_1_85_0.tar.bz2
+        tar xjf boost_1_85_0.tar.bz2
+    fi
+    (cd boost_1_85_0; \
+      ./bootstrap.sh --prefix=${CMAKE_INSTALL_PREFIX} ${BOOST_LIBDIR} --without-libraries=${BOOST_LIB_EXCLUDE};\
+      ./b2 ${BOOST_SETTINGS} install) || exit 2
+
+    export BOOST_ROOT=${CMAKE_INSTALL_PREFIX}
+    log "Installation complete. BOOST_ROOT is $BOOST_ROOT"
+fi
+
 # Find or build SystemC and UVM-SystemC
 if [[ -z "$SYSTEMC_HOME" ]]; then
     SYSTEMC_VERSION="2.3.4"
@@ -100,7 +125,7 @@ if [[ -z "$SYSTEMC_HOME" ]]; then
     wget https://github.com/accellera-official/systemc/archive/refs/tags/${SYSTEMC_VERSION}.tar.gz
     tar xvzf "${SYSTEMC_VERSION}.tar.gz"
     pushd "systemc-${SYSTEMC_VERSION}"
-    cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" -DCMAKE_CXX_STANDARD=17 -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=OFF $CMAKE_ARGS .
+    cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" -DCMAKE_CXX_STANDARD=$CXX_STD -DENABLE_PHASE_CALLBACKS_TRACING=OFF -DBUILD_SHARED_LIBS=OFF $CMAKE_ARGS .
     make -j "$NUM_THREADS"
     make install -j "$NUM_THREADS"
 

@@ -18,21 +18,7 @@ Make sure all pre install requirements of CRAVE and UVM-SystemC are met:
 * Boost (at least v1.50.0 and the environment variable BOOST_ROOT must be set accordingly)
 
 If Boost installation is already available BOOST_ROOT envrinment should point to its location.
-Alternativelly boost library cna be installed by conan.
-
-Install conan:
-# create a virtual environment
-python -m venv .venv
-# activate virtual environment
-source .venv/bin/activate
-# install conan 2
-pip install --upgrade pip
-pip install conan
-conan profile detect --force
-# install Boost
-conan install . --output-folder=build/ALL --build=missing
-
-
+Alternativelly, the boost library will be automatically installed locally by the buildscript.
 
 The version of CRAVE included in this distribution by default will build a minimal configuration (Glog and 2 solver backends: CUDD and Z3). 
 Other configurations with additional backends (e.g. Boolector, SWORD, CVC4, etc.) are also possible. 

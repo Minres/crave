@@ -60,9 +60,18 @@ function (add_all_tests prog cfile)
   
 endfunction(add_all_tests)
 
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+if(Boost_FOUND)
+    message(STATUS "Boost found: ${Boost_VERSION}")
+    message(STATUS "Boost include directory: ${Boost_INCLUDE_DIRS}")
+    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+else()
+    message(FATAL_ERROR "Boost not found!")
+endif()
+
 add_library (${PROJECT_NAME}_boost_test ${STATIC_OR_SHARED} boost_test.cpp)
-link_libraries (${PROJECT_NAME}_boost_test ${PROJECT_NAME} Threads::Threads ${Boost_LIBRARIES} )
-target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
+link_libraries (${PROJECT_NAME}_boost_test ${PROJECT_NAME} Threads::Threads Boost::unit_test_framework)
+target_include_directories(${PROJECT_NAME}_boost_test PRIVATE ${Boost_INCLUDE_DIRS})
 
 add_executable(solver_independent_tests core/solver_independent_tests.cpp)
 add_all_tests(solver_independent_tests core/solver_independent_tests.cpp)

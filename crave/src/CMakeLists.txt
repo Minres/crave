@@ -80,6 +80,17 @@ add_library (${PROJECT_NAME} STATIC
   ${CRAVE_LIB_SRC}
 )
 
+find_package(Boost REQUIRED COMPONENTS filesystem)
+if(Boost_FOUND)
+    message(STATUS "Boost found: ${Boost_VERSION}")
+    message(STATUS "Boost include directory: ${Boost_INCLUDE_DIRS}")
+    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+else()
+    message(FATAL_ERROR "Boost not found!")
+endif()
+target_include_directories(${PROJECT_NAME} PRIVATE Boost::filesystem)
+target_link_libraries (${PROJECT_NAME} PRIVATE Boost::filesystem)
+
 find_package(GLOG)
 if(GLOG_FOUND)
   target_compile_options(${PROJECT_NAME} PUBLIC -DCRAVE_HAVE_GLOG)
