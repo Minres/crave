@@ -16,27 +16,17 @@ BOOST_SETTINGS="link=static cxxflags='-std=c++${CXX_STD}'"
 check_env_variables() {
     local error_msg=""
     if [[ -z "$CXX" ]]; then
-        error_msg+="CXX is not set. It can be set using following command: export CXX=$(type -p g++)' -std=c++17' \n"
+        error_msg+="CXX is not set. It can be set using following command: export CXX=$(type -p g++)' -std=c++17' "
     fi
 
     if [[ -z "$CC" ]]; then
-        error_msg+="CC is not set. "
+        error_msg+="CC is not set. It can be set using following command: export CXX=$(type -p gcc)" 
     fi
 
     if [[ -n "$error_msg" ]]; then
         echo -e "Error: ${error_msg} Please set the required environment variables before running the script." >&2
         exit 1
     fi
-}
-
-check_centos_env() {
-    local os_info
-    os_info="$(grep -oP '(?<=^ID=).+' /etc/os-release)"
-
-    if [[ "$os_info" == "centos" ]]; then
-        echo "Warning: You are on CentOS. Please run 'scl enable devtoolset-7 rh-python38 bash' to enable the required environment." >&2
-    fi
-    echo "Don't forget to load: module load tools/gcc/7.3.0 tools/cmake/3.20 modules"
 }
 
 display_help() {
@@ -96,7 +86,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-check_centos_env
 check_env_variables
 
 if [[ -z "$BOOST_ROOT" ]]; then
@@ -170,6 +159,6 @@ cmake --preset $PRESET -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" |& tee -a 
 pushd build/${PRESET} || { log "Error: Failed to navigate to build directory."; exit 1; }
 
 log "Building and installing using Ninja..."
-ninja install |& tee -a "${LOG_FILE}" 
+ninja install -v |& tee -a "${LOG_FILE}" 
 
 popd

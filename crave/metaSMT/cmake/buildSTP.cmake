@@ -29,7 +29,7 @@ set(ENV{PATH} "${help2man_BINARY_DIR}/install/bin:$ENV{PATH}")
 FetchContent_Declare(
     stp_repo
     GIT_REPOSITORY https://github.com/stp/stp.git
-    GIT_TAG 2.3.3
+    GIT_TAG 2.3.4
 )
 FetchContent_GetProperties(stp_repo)
 

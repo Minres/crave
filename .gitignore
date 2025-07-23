@@ -13,3 +13,6 @@ crave2uvm_build.log
 /*.tar.gz
 /*.log
 .venv
+/venv/
+/.direnv/
+/boost_1_85_0
