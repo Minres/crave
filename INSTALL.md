@@ -28,23 +28,59 @@ For more detailed instructions , please refer to the CRAVE README or contact us.
 
 ## Installation
 
-CVC4 installation requires toml:
+The [`buildscript`](./buildscript) automates the installation and setup of all dependencies required for CRAVE2UVM, including Boost, SystemC, and UVM-SystemC. It also configures and builds the CRAVE2UVM project itself.
 
-`pip install toml`
+### What the Script Does
 
-To install and run the example, use the buildscript on the toplevel of this repository.
-The installation of crave2uvm requires the libraries systemc and uvm-systemc, they are automatically installed by this script if the environment variables SYSTEMC_HOME and UVM_SYSTEMC_HOME are not set.
+1. **Checks Environment Variables:**  
+   Ensures required compilers and environment variables are set (`CXX`, `CC`, etc.).
 
-`./buildscript --install <INSTALL_DIR>`
+2. **Parses Command-Line Options:**  
+   * `-j <num_threads>`: Number of threads for building (default: 4).
+   * `--install <DIR>`: Installation directory (default: current directory).
+   * `--preset <PRESET>`: Selects a build preset (e.g., `CUDD-Z3`, `ALL`).
 
-1. Minimal CRAVE setup with CUDD and Z3: `./buildscript --install <INSTALL_DIR> --preset CUDD-Z3 .`
-2. CRAVE setup with all SMTs (YICES2, CVC4, MiniSat, STP, Aiger, picosat): `./buildscript --install <INSTALL_DIR> --preset ALL .`
+3. **Installs Dependencies (if needed):**  
+   * **Boost:** Downloads and builds Boost locally if `BOOST_ROOT` environment variable is not set.
+   * **SystemC:** Downloads and builds SystemC if `SYSTEMC_HOME` environment variable is not set.
+   * **UVM-SystemC:** Downloads and builds UVM-SystemC if `UVM_SYSTEMC_HOME` environment variable is not set.
+
+4. **Configures and Builds CRAVE2UVM:**  
+   Runs CMake with the selected preset and builds the project using Ninja.
+
+5. **Logging:**  
+   All output is logged to `crave2uvm_build.log` for troubleshooting.
+
+### Usage Examples
+
+* **Minimal setup (CUDD and Z3):**
+
+  ```sh
+  ./buildscript --install <INSTALL_DIR> --preset CUDD-Z3
+  ```
+
+* **Full setup (all SMTs):**
+
+  ```sh
+  ./buildscript --install <INSTALL_DIR> --preset ALL
+  ```
+
+### Notes
+
+* If you already have Boost, SystemC, or UVM-SystemC installed, set the corresponding environment variables (`BOOST_ROOT`, `SYSTEMC_HOME`, `UVM_SYSTEMC_HOME`) before running the script to skip their installation.
+* The script will attempt to download and build missing dependencies automatically.
+* For CVC4 support, ensure Python’s `toml` package is installed:
+
+  ```sh
+  pip install toml
+  ```
 
 ## Tested OS
 
 This distribution has been tested on the following 64-bit Linux (x86_64) systems:
 
 * CentOS7 gcc 7.3.0
+* Rocky Linux 9.5 gcc 13.3.1
 
 ## Contact
 
