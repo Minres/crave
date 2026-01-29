@@ -1,6 +1,6 @@
 FetchContent_Declare(
     picosat_repo
-    URL https://fmv.jku.at/picosat/picosat-936.tar.gz
+    URL https://fmv.jku.at/picosat/picosat-965.tar.gz
 )
 FetchContent_GetProperties(picosat_repo)
 

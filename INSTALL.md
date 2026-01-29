@@ -9,7 +9,9 @@ Make sure all pre install requirements of CRAVE and UVM-SystemC are met:
 
 * CMake (at least v3.20)
 * GNU Make
+* Ninja (used by the buildscript for the CRAVE build)
 * g++ (at least v4.7.2)
+* wget (used by the buildscript to download dependencies)
 * SystemC:
   the environment variable SYSTEMC_HOME must show to the SystemC installation.
 * UVM-SystemC:
@@ -33,7 +35,7 @@ The [`buildscript`](./buildscript) automates the installation and setup of all d
 ### What the Script Does
 
 1. **Checks Environment Variables:**  
-   Ensures required compilers and environment variables are set (`CXX`, `CC`, etc.).
+   Ensures required compilers and environment variables are set (`CXX`, `CC`, etc.). Defaults to `gcc/g++` if present.
 
 2. **Parses Command-Line Options:**  
    * `-j <num_threads>`: Number of threads for building (default: 4).
@@ -41,15 +43,15 @@ The [`buildscript`](./buildscript) automates the installation and setup of all d
    * `--preset <PRESET>`: Selects a build preset (e.g., `CUDD-Z3`, `ALL`).
 
 3. **Installs Dependencies (if needed):**  
-   * **Boost:** Downloads and builds Boost locally if `BOOST_ROOT` environment variable is not set.
-   * **SystemC:** Downloads and builds SystemC if `SYSTEMC_HOME` environment variable is not set.
-   * **UVM-SystemC:** Downloads and builds UVM-SystemC if `UVM_SYSTEMC_HOME` environment variable is not set.
+   * **Boost:** Downloads and builds Boost **1.85.0** locally if `BOOST_ROOT` is not set. Override with `BOOST_VERSION`.
+   * **SystemC:** Downloads and builds **SystemC 2.3.4** if `SYSTEMC_HOME` is not set. Override with `SYSTEMC_VERSION`.
+   * **UVM-SystemC:** Downloads and builds **uvm-systemc 1.0-beta4** if `UVM_SYSTEMC_HOME` is not set. Override with `UVM_SYSTEMC_VERSION`.
 
 4. **Configures and Builds CRAVE2UVM:**  
-   Runs CMake with the selected preset and builds the project using Ninja.
+   Runs CMake with the selected preset and builds the project. The build directory is `build/<PRESET>`.
 
 5. **Logging:**  
-   All output is logged to `crave2uvm_build.log` for troubleshooting.
+   All output is logged to `crave2uvm_build.log` (in the repo root) for troubleshooting.
 
 ### Usage Examples
 
@@ -74,6 +76,16 @@ The [`buildscript`](./buildscript) automates the installation and setup of all d
   ```sh
   pip install toml
   ```
+* The install prefix defaults to the current working directory unless `--install <DIR>` is provided.
+
+### Running Tests
+
+Tests are registered in subdirectories of the build directory.
+
+```sh
+ctest --test-dir build/ALL/crave/tests
+ctest --test-dir build/ALL/crave/metaSMT/tests
+```
 
 ## Tested OS
 

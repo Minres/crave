@@ -43,5 +43,17 @@
           "metaSMT_USE_picosat": "ON"
         }
       }
+    ],
+    "buildPresets": [
+      {
+        "name": "CUDD-Z3",
+        "configurePreset": "CUDD-Z3",
+        "jobs": 32
+      },
+      {
+        "name": "ALL",
+        "configurePreset": "ALL",
+        "jobs": 32
+      }
     ]
 }
