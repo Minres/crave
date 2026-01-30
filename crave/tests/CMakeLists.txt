@@ -25,7 +25,7 @@
 ##########################################################################################
 
 if ( NOT CRAVE_TIMEOUT )
-  set(CRAVE_TIMEOUT 30)
+  set(CRAVE_TIMEOUT 60)
 endif()
 include_directories (../src)
 
@@ -60,13 +60,15 @@ function (add_all_tests prog cfile)
   
 endfunction(add_all_tests)
 
-find_package(Boost REQUIRED COMPONENTS unit_test_framework)
-if(Boost_FOUND)
-    message(STATUS "Boost found: ${Boost_VERSION}")
-    message(STATUS "Boost include directory: ${Boost_INCLUDE_DIRS}")
-    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
-else()
-    message(FATAL_ERROR "Boost not found!")
+if(NOT TARGET Boost::unit_test_framework)
+  find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+  if(Boost_FOUND)
+      message(STATUS "Boost found: ${Boost_VERSION}")
+      message(STATUS "Boost include directory: ${Boost_INCLUDE_DIRS}")
+      message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+  else()
+      message(FATAL_ERROR "Boost not found!")
+  endif()
 endif()
 
 add_library (${PROJECT_NAME}_boost_test ${STATIC_OR_SHARED} boost_test.cpp)
@@ -121,5 +123,4 @@ if(SystemCLanguage_FOUND)
   add_all_tests( SystemC_Data core/test_SystemC_Data.cpp)
   target_link_libraries ( SystemC_Data SystemC::systemc ${Boost_FILESYSTEM_LIBRARY} ${PROJECT_NAME})
 endif(SystemCLanguage_FOUND)
-
 

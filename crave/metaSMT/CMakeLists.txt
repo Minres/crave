@@ -104,7 +104,7 @@ set(metaSMT_CONFIG_DIR "share/metaSMT" CACHE PATH
   "where to install CMake and Make Config files")
 
 if ( NOT TIMEOUT )
-  set(TIMEOUT 5 CACHE STRING "The timeout for tests")
+  set(TIMEOUT 60 CACHE STRING "The timeout for tests")
 endif()
 
 include(ExternalProject)

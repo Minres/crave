@@ -26,12 +26,15 @@ endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-# Set the path to SystemC if provided through the SYSTEMC_HOME environment variable
-if(DEFINED ENV{SYSTEMC_HOME})
-    set(SystemCLanguage_ROOT $ENV{SYSTEMC_HOME})
-endif()
-find_package(SystemCLanguage REQUIRED)
-find_package(UVM-SystemC REQUIRED)
+option(FETCH_ALL_DEPS "Force download/build of all external deps, ignoring system installs" OFF)
+option(FETCH_BOOST "Force download/build of Boost, ignoring system installs" OFF)
+option(FETCH_SYSTEMC "Force download/build of SystemC, ignoring system installs" OFF)
+option(FETCH_UVM_SC "Force download/build of UVM-SystemC, ignoring system installs" OFF)
+set(CRAVE_DEPS_PREFIX "${CMAKE_BINARY_DIR}/_deps/install" CACHE PATH "Prefix for fetched dependencies")
+include(${PROJECT_SOURCE_DIR}/cmake/CraveDeps.cmake)
+
+crave_find_or_fetch_systemc()
+crave_find_or_fetch_uvm_systemc()
 
 option(BUILD_CRAVE "Build CRAVE and metaSMT as part of the project or import it from a different location" ON)
 if(BUILD_CRAVE)
