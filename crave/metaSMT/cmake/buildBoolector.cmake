@@ -1,41 +1,31 @@
-FetchContent_Declare(
-    boolector_git
-    GIT_REPOSITORY https://github.com/Boolector/boolector.git
-    GIT_TAG 3.2.3
-)
-FetchContent_GetProperties(boolector_git)
-
-if(NOT boolector_git_POPULATED)
-    FetchContent_Populate(boolector_git)
-endif()
 set(install_dir ${CMAKE_INSTALL_PREFIX})
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
     set(install_dir ${CMAKE_BINARY_DIR}/solvers/boolector)
 endif()
 
-execute_process(
-    COMMAND ./contrib/setup-lingeling.sh 
-    COMMAND ./contrib/setup-btor2tools.sh 
-    COMMAND ./contrib/setup-cadical.sh 
-    WORKING_DIRECTORY ${boolector_git_SOURCE_DIR}
+file(MAKE_DIRECTORY "${install_dir}/include")
+file(MAKE_DIRECTORY "${install_dir}/lib")
+
+ExternalProject_Add(boolector_ext
+  GIT_REPOSITORY https://github.com/Boolector/boolector.git
+  GIT_TAG 3.2.3
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  CONFIGURE_COMMAND bash -c "./contrib/setup-lingeling.sh && ./contrib/setup-btor2tools.sh && ./contrib/setup-cadical.sh && ./configure.sh --prefix ${install_dir} --shared"
+  BUILD_COMMAND bash -c "make -C build -j${CRAVE_BUILD_JOBS}"
+  INSTALL_COMMAND bash -c "make -C build install"
+  BUILD_IN_SOURCE 1
+  BUILD_BYPRODUCTS ${install_dir}/lib/libboolector.so
 )
 
-execute_process(
-  WORKING_DIRECTORY ${boolector_git_SOURCE_DIR}
-  COMMAND bash -c "./configure.sh --prefix ${install_dir} --shared && make -C build -j install"
-  RESULT_VARIABLE BOOLECTOR_RESULT
-  ECHO_OUTPUT_VARIABLE
-  ECHO_ERROR_VARIABLE
+set(Boolector_VERSION 3.2.3 CACHE STRING "" FORCE)
+set(Boolector_FOUND TRUE CACHE BOOL "" FORCE)
+set(Boolector_INCLUDE_DIRS "${install_dir}/include" CACHE PATH "" FORCE)
+
+add_library(Boolector::boolector UNKNOWN IMPORTED)
+set_target_properties(Boolector::boolector PROPERTIES
+  IMPORTED_LOCATION ${install_dir}/lib/libboolector.so
+  INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
 )
+add_dependencies(Boolector::boolector boolector_ext)
 
-if(NOT BOOLECTOR_RESULT EQUAL 0)
-  message(FATAL_ERROR "Failed to build Boolector: ${BOOLECTOR_OUTPUT}")
-endif()
-
-find_package(Boolector REQUIRED HINTS ${install_dir}/lib/cmake)
-message(STATUS "Use boolector from ${install_dir}")
-
-
-
-
+message(STATUS "Use Boolector ${Boolector_VERSION} from ${install_dir}")

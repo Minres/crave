@@ -1,6 +1,16 @@
 include(ExternalProject)
 include(FetchContent)
 
+# Prefer user-provided parallelism, otherwise default to a conservative value.
+if(NOT DEFINED CRAVE_BUILD_JOBS OR "${CRAVE_BUILD_JOBS}" STREQUAL "")
+    if(DEFINED ENV{CMAKE_BUILD_PARALLEL_LEVEL} AND NOT "$ENV{CMAKE_BUILD_PARALLEL_LEVEL}" STREQUAL "")
+        set(_crave_default_jobs "$ENV{CMAKE_BUILD_PARALLEL_LEVEL}")
+    else()
+        set(_crave_default_jobs "32")
+    endif()
+    set(CRAVE_BUILD_JOBS "${_crave_default_jobs}" CACHE STRING "Parallel build jobs for ExternalProject builds")
+endif()
+
 # Dependency helpers:
 # - Set a shared install prefix for fetched deps and expose libdir for byproducts.
 # - Decide whether to fetch based on FETCH_ALL_DEPS or per-dep flags.
@@ -37,8 +47,12 @@ function(crave_find_or_fetch_boost)
         find_package(Boost QUIET COMPONENTS system)
     endif()
 
-    if(Boost_FOUND AND TARGET Boost::system)
+    if(NOT do_fetch AND Boost_FOUND AND TARGET Boost::system)
+        message(STATUS "Boost: ${Boost_VERSION} @ ${Boost_INCLUDE_DIRS}")
         return()
+    endif()
+    if(do_fetch)
+        set(Boost_NO_SYSTEM_PATHS ON CACHE BOOL "Disable system Boost when fetching" FORCE)
     endif()
 
     set(BOOST_VERSION "${BOOST_VERSION}" CACHE STRING "Boost version to fetch")
@@ -68,25 +82,27 @@ function(crave_find_or_fetch_boost)
     ExternalProject_Add(boost_ext
         SOURCE_DIR ${boost_src_SOURCE_DIR}
         DOWNLOAD_COMMAND ""
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         CONFIGURE_COMMAND ./bootstrap.sh --prefix=${CRAVE_DEPS_PREFIX} ${BOOST_LIBDIR_OPT} --without-libraries=${BOOST_LIB_EXCLUDE}
-        BUILD_COMMAND ./b2 link=static cxxflags=-std=c++${CMAKE_CXX_STANDARD} install
+        BUILD_COMMAND ./b2 -j${CRAVE_BUILD_JOBS} link=static cxxflags=-std=c++${CMAKE_CXX_STANDARD} install
         INSTALL_COMMAND ""
         BUILD_BYPRODUCTS
             "${CRAVE_DEPS_LIBDIR}/libboost_system.a"
+            "${CRAVE_DEPS_LIBDIR}/libboost_filesystem.a"
             "${CRAVE_DEPS_LIBDIR}/libboost_unit_test_framework.a"
         BUILD_IN_SOURCE 1
     )
 
     set(Boost_FOUND TRUE CACHE BOOL "" FORCE)
+    set(Boost_VERSION "${BOOST_VERSION}" CACHE STRING "" FORCE)
     set(BOOST_ROOT "${CRAVE_DEPS_PREFIX}" CACHE PATH "" FORCE)
     set(Boost_ROOT "${CRAVE_DEPS_PREFIX}" CACHE PATH "" FORCE)
     set(Boost_INCLUDE_DIR "${boost_src_SOURCE_DIR}" CACHE PATH "" FORCE)
     set(Boost_INCLUDE_DIRS "${boost_src_SOURCE_DIR}" CACHE PATH "" FORCE)
     set(Boost_LIBRARY_DIRS "${CRAVE_DEPS_LIBDIR}" CACHE PATH "" FORCE)
     set(Boost_SYSTEM_LIBRARY "${CRAVE_DEPS_LIBDIR}/libboost_system.a" CACHE FILEPATH "" FORCE)
+    set(Boost_FILESYSTEM_LIBRARY "${CRAVE_DEPS_LIBDIR}/libboost_filesystem.a" CACHE FILEPATH "" FORCE)
     set(Boost_UNIT_TEST_FRAMEWORK_LIBRARY "${CRAVE_DEPS_LIBDIR}/libboost_unit_test_framework.a" CACHE FILEPATH "" FORCE)
-    set(Boost_LIBRARIES "${Boost_SYSTEM_LIBRARY}" CACHE STRING "" FORCE)
+    set(Boost_LIBRARIES "${Boost_SYSTEM_LIBRARY};${Boost_FILESYSTEM_LIBRARY}" CACHE STRING "" FORCE)
 
     if(NOT TARGET Boost::system)
         add_library(Boost::system UNKNOWN IMPORTED)
@@ -105,11 +121,20 @@ function(crave_find_or_fetch_boost)
         )
         add_dependencies(Boost::unit_test_framework boost_ext)
     endif()
+
+    if(NOT TARGET Boost::filesystem)
+        add_library(Boost::filesystem UNKNOWN IMPORTED)
+        set_target_properties(Boost::filesystem PROPERTIES
+            IMPORTED_LOCATION "${Boost_FILESYSTEM_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
+        )
+        add_dependencies(Boost::filesystem boost_ext)
+    endif()
+    message(STATUS "Boost: ${Boost_VERSION} @ ${Boost_INCLUDE_DIRS}")
 endfunction()
 
 function(crave_find_or_fetch_systemc)
     _crave_deps_set_prefix()
-
     _crave_should_fetch(FETCH_SYSTEMC do_fetch)
     if(NOT do_fetch)
         if(DEFINED ENV{SYSTEMC_HOME})
@@ -120,6 +145,7 @@ function(crave_find_or_fetch_systemc)
     endif()
 
     if(SystemC_FOUND AND TARGET SystemC::systemc)
+        message(STATUS "SystemC: ${SystemC_INCLUDE_DIRS}")
         return()
     endif()
 
@@ -139,6 +165,7 @@ function(crave_find_or_fetch_systemc)
             -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
             -DBUILD_SHARED_LIBS=OFF
             -DENABLE_PHASE_CALLBACKS_TRACING=OFF
+        BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --parallel ${CRAVE_BUILD_JOBS}
         BUILD_BYPRODUCTS "${CRAVE_DEPS_LIBDIR}/libsystemc.a"
         INSTALL_DIR ${CRAVE_DEPS_PREFIX}
     )
@@ -156,6 +183,9 @@ function(crave_find_or_fetch_systemc)
         )
         add_dependencies(SystemC::systemc systemc_ext)
     endif()
+    install(FILES "${CRAVE_DEPS_LIBDIR}/libsystemc.a" DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(DIRECTORY "${CRAVE_DEPS_PREFIX}/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    message(STATUS "SystemC: ${SYSTEMC_VERSION} @ ${SystemC_INCLUDE_DIRS}")
 endfunction()
 
 function(crave_find_or_fetch_uvm_systemc)
@@ -170,6 +200,7 @@ function(crave_find_or_fetch_uvm_systemc)
     endif()
 
     if(UVM_SystemC_FOUND AND TARGET UVM::uvm-systemc)
+        message(STATUS "UVM-SystemC: unknown version @ ${UVM_SystemC_INCLUDE_DIRS}")
         return()
     endif()
 
@@ -184,7 +215,7 @@ function(crave_find_or_fetch_uvm_systemc)
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         CONFIGURE_COMMAND <SOURCE_DIR>/config/bootstrap
         COMMAND <SOURCE_DIR>/configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=${CRAVE_DEPS_PREFIX} --prefix=${CRAVE_DEPS_PREFIX} --libdir=${CRAVE_DEPS_LIBDIR}
-        BUILD_COMMAND make -j 4
+        BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
         INSTALL_COMMAND make install
         BUILD_BYPRODUCTS "${CRAVE_DEPS_LIBDIR}/libuvm-systemc.a"
         BUILD_IN_SOURCE 1
@@ -205,4 +236,7 @@ function(crave_find_or_fetch_uvm_systemc)
         )
         add_dependencies(UVM::uvm-systemc uvm_systemc_ext)
     endif()
+    install(FILES "${CRAVE_DEPS_LIBDIR}/libuvm-systemc.a" DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(DIRECTORY "${CRAVE_DEPS_PREFIX}/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    message(STATUS "UVM-SystemC: ${UVM_SYSTEMC_VERSION} @ ${UVM_SystemC_INCLUDE_DIRS}")
 endfunction()

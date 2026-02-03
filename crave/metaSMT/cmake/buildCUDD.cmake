@@ -1,62 +1,34 @@
-# pull the git repo
-FetchContent_Declare(
-    cudd_repo
-    GIT_REPOSITORY https://github.com/nbruns1/cudd.git
-    GIT_TAG cudd-3.0.0
-)
-FetchContent_GetProperties(cudd_repo)
-if(NOT cudd_repo_POPULATED)
-    FetchContent_Populate(cudd_repo)
-endif()
+include(ExternalProject)
+
 set(install_dir ${CMAKE_INSTALL_PREFIX})
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
     set(install_dir ${CMAKE_BINARY_DIR}/solvers/cudd)
 endif()
-# build the cudd library
-add_custom_command(
-  OUTPUT ${install_dir}/lib/libcudd.a
-  WORKING_DIRECTORY ${cudd_repo_SOURCE_DIR}
-  COMMAND touch configure.ac aclocal.m4 configure Makefile.am Makefile.in
-  COMMAND ./configure --enable-obj --enable-dddmp --prefix=${install_dir}
-  COMMAND make -j
-  COMMAND make install
-  COMMENT "Building CUDD library"
-  USES_TERMINAL
-)
-add_custom_target(cudd_git DEPENDS ${install_dir}/lib/libcudd.a)
-# declare the cudd target
-add_library(cudd INTERFACE)
-target_include_directories(cudd INTERFACE ${install_dir}/include)
-target_link_libraries(cudd INTERFACE ${install_dir}/lib/libcudd.a)
-target_link_directories(cudd INTERFACE ${install_dir}/lib)
-add_dependencies(cudd cudd_git)
-add_library(cudd::cudd ALIAS cudd)
-# install the target
+
 include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-set(cudd_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/cudd)
+set(CUDD_LIBDIR "${install_dir}/${CMAKE_INSTALL_LIBDIR}")
 
-install(TARGETS cudd EXPORT cudd-targets)
+file(MAKE_DIRECTORY "${install_dir}/include")
+file(MAKE_DIRECTORY "${CUDD_LIBDIR}")
 
-install(
-  EXPORT cudd-targets
-  DESTINATION ${cudd_CMAKE_CONFIG_DIR}
+ExternalProject_Add(cudd_ext
+    GIT_REPOSITORY https://github.com/nbruns1/cudd.git
+    GIT_TAG cudd-3.0.0
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    UPDATE_COMMAND ""
+    CONFIGURE_COMMAND bash -c "touch configure.ac aclocal.m4 configure Makefile.am Makefile.in && ./configure --enable-obj --enable-dddmp --prefix=${install_dir} --libdir=${CUDD_LIBDIR}"
+    BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
+    INSTALL_COMMAND make install
+    BUILD_IN_SOURCE 1
+    BUILD_BYPRODUCTS ${CUDD_LIBDIR}/libcudd.a
 )
 
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config-version.cmake
-    VERSION 3.0.0
-    COMPATIBILITY AnyNewerVersion
+add_library(cudd UNKNOWN IMPORTED)
+set_target_properties(cudd PROPERTIES
+    IMPORTED_LOCATION ${CUDD_LIBDIR}/libcudd.a
+    INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
 )
+add_dependencies(cudd cudd_ext)
+add_library(cudd::cudd ALIAS cudd)
 
-configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/cudd-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config.cmake
-    INSTALL_DESTINATION ${cudd_CMAKE_CONFIG_DIR}
-)
-
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config-version.cmake
-    DESTINATION ${cudd_CMAKE_CONFIG_DIR})
+message(STATUS "Use CUDD 3.0.0 from ${install_dir}")

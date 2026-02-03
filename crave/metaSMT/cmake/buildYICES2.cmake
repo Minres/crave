@@ -1,72 +1,50 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/buildGMP.cmake)
 
-# Fetch and build gperf
-FetchContent_Declare(
-    gperf_repo
-    URL https://ftp.gnu.org/pub/gnu/gperf/gperf-3.1.tar.gz
-)
-FetchContent_GetProperties(gperf_repo)
-
-if(NOT gperf_repo_POPULATED)
-    FetchContent_Populate(gperf_repo)
-endif()
-
 set(GPERF_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(GPERF_INSTALL_DIR ${CMAKE_BINARY_DIR}/solvers/gperf)
+endif()
 
-execute_process(
-  WORKING_DIRECTORY ${gperf_repo_SOURCE_DIR}
-  COMMAND bash -c "./configure --prefix=${GPERF_INSTALL_DIR} && make -j && make install"
-  RESULT_VARIABLE GPERF_RESULT
-  OUTPUT_VARIABLE GPERF_OUTPUT
-  ERROR_VARIABLE GPERF_ERROR
+file(MAKE_DIRECTORY "${GPERF_INSTALL_DIR}/bin")
+
+ExternalProject_Add(gperf_ext
+  URL https://ftp.gnu.org/pub/gnu/gperf/gperf-3.1.tar.gz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  CONFIGURE_COMMAND ./configure --prefix=${GPERF_INSTALL_DIR}
+  BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
+  INSTALL_COMMAND make install
+  BUILD_IN_SOURCE 1
+  BUILD_BYPRODUCTS ${GPERF_INSTALL_DIR}/bin/gperf
 )
-
-# Check the result of the command
-if(NOT GPERF_RESULT EQUAL 0)
-  message(FATAL_ERROR "Failed to build gperf: ${GPERF_OUTPUT} ${GPERF_ERROR}")
-endif()
-
-# Find the gperf executable
-find_program(GPERF_EXECUTABLE gperf HINTS ${GPERF_INSTALL_DIR}/bin)
-if(NOT GPERF_EXECUTABLE)
-  message(FATAL_ERROR "gperf executable not found")
-endif()
-
-FetchContent_Declare(
-    yices2_repo
-    GIT_REPOSITORY https://github.com/SRI-CSL/yices2.git
-    GIT_TAG Yices-2.6.4
-)
-FetchContent_GetProperties(yices2_repo)
-
-if(NOT yices2_repo_POPULATED)
-    FetchContent_Populate(yices2_repo)
-endif()
 
 set(install_dir ${CMAKE_INSTALL_PREFIX})
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
     set(install_dir ${CMAKE_BINARY_DIR}/solvers/yices2)
 endif()
 
-add_custom_command(
-    OUTPUT ${install_dir}/lib/libyices.a
-    WORKING_DIRECTORY ${yices2_repo_SOURCE_DIR}
-    COMMAND autoconf
-    COMMAND ./configure --prefix=${install_dir}  GPERF=${GPERF_EXECUTABLE} CPPFLAGS=-I${GMP_INSTALL_DIR}/include LDFLAGS=-L${GMP_INSTALL_DIR}/lib
-    COMMAND make -j
-    COMMAND make install -j
-    COMMENT "Building Yicies library"
-    USES_TERMINAL
+file(MAKE_DIRECTORY "${install_dir}/include")
+file(MAKE_DIRECTORY "${install_dir}/lib")
+
+ExternalProject_Add(yices2_ext
+  GIT_REPOSITORY https://github.com/SRI-CSL/yices2.git
+  GIT_TAG Yices-2.6.4
+  CONFIGURE_COMMAND bash -c "autoconf && ./configure --prefix=${install_dir} GPERF=${GPERF_INSTALL_DIR}/bin/gperf CPPFLAGS=-I${GMP_INSTALL_DIR}/include LDFLAGS=-L${GMP_INSTALL_DIR}/lib"
+  BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
+  INSTALL_COMMAND make -j${CRAVE_BUILD_JOBS} install
+  BUILD_IN_SOURCE 1
+  BUILD_BYPRODUCTS ${install_dir}/lib/libyices.a
+  DEPENDS gperf_ext gmp_ext
 )
 
-add_custom_target(yices2_repo DEPENDS ${install_dir}/lib/libyices.a)
+add_library(yices2::yices2 UNKNOWN IMPORTED)
+set_target_properties(yices2::yices2 PROPERTIES
+  IMPORTED_LOCATION ${install_dir}/lib/libyices.a
+  INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
+)
+add_dependencies(yices2::yices2 yices2_ext)
+
 add_library(yices2 INTERFACE)
-target_include_directories(yices2 INTERFACE ${install_dir}/include)
-target_link_libraries(yices2 INTERFACE ${install_dir}/lib/libyices.a gmp)
-target_link_directories(yices2 INTERFACE ${install_dir}/lib)
-add_dependencies(yices2 DEPENDS yices2_repo)
-add_library(yices2::yices2 ALIAS yices2)
+target_link_libraries(yices2 INTERFACE yices2::yices2 gmp::gmp)
 # install the target
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
@@ -95,4 +73,4 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/yices2-config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/yices2-config-version.cmake
     DESTINATION ${yices2_CMAKE_CONFIG_DIR})
-message(STATUS "Use yices2 from ${install_dir}")
+message(STATUS "Use Yices2 2.6.4 from ${install_dir}")

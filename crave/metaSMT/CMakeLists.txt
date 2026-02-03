@@ -23,8 +23,8 @@
 ##########################################################################################
 
 
-PROJECT(metaSMT VERSION 4.0 LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.20)
+PROJECT(metaSMT VERSION 4.0 LANGUAGES CXX)
 
 set(META_SMT_VERSION ${PROJECT_VERSION} CACHE STRING "metaSMT project version")
 
@@ -63,10 +63,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules )
 
 set(Boost_NO_BOOST_CMAKE true)
 set(Boost_NO_SYSTEM_PATHS true)
-find_package(Boost REQUIRED)
+if(NOT TARGET Boost::system AND NOT TARGET Boost::filesystem)
+  find_package(Boost REQUIRED)
+endif()
 
 # From v1.57.0 Boost.Any does not require RTTI
-if (${Boost_VERSION} VERSION_LESS 105700)
+if(NOT Boost_VERSION)
+  set(Boost_VERSION 0)
+endif()
+if (Boost_VERSION VERSION_LESS 105700)
   message( STATUS "metaSMT requires RTTI" )
   set(metaSMT_REQUIRE_RTTI true)
 else()
@@ -167,4 +172,3 @@ if(metaSMT_ENABLE_TESTS)
   enable_testing()
   add_subdirectory(tests)
 endif()
-

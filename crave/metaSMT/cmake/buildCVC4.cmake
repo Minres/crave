@@ -1,35 +1,34 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/buildGMP.cmake)
 
-FetchContent_Declare(
-    cvc4_repo
-    GIT_REPOSITORY https://github.com/CVC4/CVC4-archived.git
-    GIT_TAG 1.8
-)
-FetchContent_GetProperties(cvc4_repo)
-
-if(NOT cvc4_repo_POPULATED)
-    FetchContent_Populate(cvc4_repo)
-endif()
-
 set(install_dir ${CMAKE_INSTALL_PREFIX})
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    # Fallback in case where CMAKE_INSTALL_PREFIX is not explicitly set by the user
     set(install_dir ${CMAKE_BINARY_DIR}/solvers/cvc4)
 endif()
 
-execute_process(
-  WORKING_DIRECTORY ${cvc4_repo_SOURCE_DIR}
-  COMMAND bash -c "./contrib/get-antlr-3.4 && ./configure.sh --python3 --prefix=${install_dir} --gmp-dir=${GMP_INSTALL_DIR} && make -C build install -j"
-  RESULT_VARIABLE CVC4_RESULT
-  ECHO_OUTPUT_VARIABLE
-  ECHO_ERROR_VARIABLE
+file(MAKE_DIRECTORY "${install_dir}/include")
+file(MAKE_DIRECTORY "${install_dir}/lib")
+
+ExternalProject_Add(cvc4_ext
+  GIT_REPOSITORY https://github.com/CVC4/CVC4-archived.git
+  GIT_TAG 1.8
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  CONFIGURE_COMMAND bash -c "./contrib/get-antlr-3.4 && ./configure.sh --python3 --prefix=${install_dir} --gmp-dir=${GMP_INSTALL_DIR}"
+  BUILD_COMMAND bash -c "make -C build -j${CRAVE_BUILD_JOBS}"
+  INSTALL_COMMAND bash -c "make -C build install"
+  BUILD_IN_SOURCE 1
+  BUILD_BYPRODUCTS ${install_dir}/lib/libcvc4.so.7
+  DEPENDS gmp_ext
 )
 
-# Check the result of the command
-if(NOT CVC4_RESULT EQUAL 0)
-  message(FATAL_ERROR "Failed to build CVC4: ${CVC4_OUTPUT}")
-endif()
+set(CVC4_FOUND TRUE CACHE BOOL "" FORCE)
+set(CVC4_INCLUDE_DIRS "${install_dir}/include" CACHE PATH "" FORCE)
 
-find_package(CVC4 CONFIG REQUIRED PATHS ${install_dir}/lib/cmake)
+add_library(CVC4::cvc4 UNKNOWN IMPORTED)
+set_target_properties(CVC4::cvc4 PROPERTIES
+  IMPORTED_LOCATION ${install_dir}/lib/libcvc4.so.7
+  INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
+  INTERFACE_LINK_LIBRARIES gmp::gmp
+)
+add_dependencies(CVC4::cvc4 cvc4_ext)
 
-message(STATUS "Use cvc4 from ${install_dir}")
+message(STATUS "Use CVC4 1.8 from ${install_dir}")
