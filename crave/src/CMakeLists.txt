@@ -41,16 +41,11 @@ SET(CRAVE_LIB_SRC
   lib/ConstraintPartition.cpp
   lib/Evaluator.cpp
   lib/RandObjGenerator.cpp
-  lib/CraveSettings.cpp
-  lib/Evaluator.cpp
-  lib/RandObjGenerator.cpp
-  lib/SettingType.cpp
   lib/VariableCoverageSolver.cpp
   lib/VariableDefaultSolver.cpp
   lib/VariableGeneratorType.cpp
   lib/VariableSolver.cpp
   lib/VectorGenerator.cpp
-  lib/ConstrainedRandom.cpp
   lib/UserVectorConstraint.cpp
   lib/UserConstraintType.cpp
   lib/ConstraintManager.cpp
@@ -76,21 +71,13 @@ if (CRAVE_ENABLE_EXPERIMENTAL)
   )
 endif (CRAVE_ENABLE_EXPERIMENTAL)
 
-add_library (${PROJECT_NAME} STATIC
+add_library (${PROJECT_NAME}
   ${CRAVE_LIB_SRC}
 )
 
 if(NOT TARGET Boost::filesystem)
-  find_package(Boost REQUIRED COMPONENTS filesystem)
-  if(Boost_FOUND)
-      message(STATUS "Boost found: ${Boost_VERSION}")
-      message(STATUS "Boost include directory: ${Boost_INCLUDE_DIRS}")
-      message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
-  else()
-      message(FATAL_ERROR "Boost not found!")
-  endif()
+  message(FATAL_ERROR "Boost::filesystem target missing. Ensure crave_find_or_fetch_boost() ran before configuring crave.")
 endif()
-target_include_directories(${PROJECT_NAME} PRIVATE Boost::filesystem)
 target_link_libraries (${PROJECT_NAME} PRIVATE Boost::filesystem)
 
 find_package(GLOG)
@@ -126,7 +113,7 @@ if(metaSMT_USE_CUDD)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_CUDD)
 endif()
 
-target_link_libraries (${PROJECT_NAME} PUBLIC metaSMT ${Boost_FILESYSTEM_LIBRARY})
+target_link_libraries (${PROJECT_NAME} PUBLIC metaSMT Boost::filesystem)
 if(WITH_SYSTEMC)
   target_link_libraries (${PROJECT_NAME} PUBLIC SystemC::systemc Threads::Threads)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DWITH_SYSTEMC)
@@ -171,6 +158,6 @@ install(FILES
 
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/crave
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.hpp"
 )

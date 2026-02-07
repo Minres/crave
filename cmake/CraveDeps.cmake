@@ -44,7 +44,7 @@ function(crave_find_or_fetch_boost)
             set(BOOST_ROOT "$ENV{BOOST_ROOT}" CACHE PATH "" FORCE)
             set(Boost_ROOT "$ENV{BOOST_ROOT}" CACHE PATH "" FORCE)
         endif()
-        find_package(Boost QUIET COMPONENTS system)
+        find_package(Boost QUIET COMPONENTS system filesystem unit_test_framework)
     endif()
 
     if(NOT do_fetch AND Boost_FOUND AND TARGET Boost::system)

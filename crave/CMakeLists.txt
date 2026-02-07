@@ -33,23 +33,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(${PROJECT_NAME}_CONFIG_DIR "share/${PROJECT_NAME}" CACHE PATH "where to install CMake and Make Config files")
 
-set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_VERBOSE_MAKEFILE ON) # Force make to print compile commands
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
-option(FETCH_ALL_DEPS "Force download/build of all external deps, ignoring system installs" OFF)
-option(FETCH_BOOST "Force download/build of Boost, ignoring system installs" OFF)
-option(FETCH_SYSTEMC "Force download/build of SystemC, ignoring system installs" OFF)
-option(FETCH_UVM_SC "Force download/build of UVM-SystemC, ignoring system installs" OFF)
-set(CRAVE_DEPS_PREFIX "${CMAKE_BINARY_DIR}/_deps/install" CACHE PATH "Prefix for fetched dependencies")
-include(${CMAKE_CURRENT_LIST_DIR}/../cmake/CraveDeps.cmake)
 
 option(CRAVE_ENABLE_EXPERIMENTAL "enable experimental extensions of CRAVE" ON)
 option(CRAVE_ENABLE_TESTS "build tests" ON)
 option(CRAVE_BUILD_EXAMPLES "build and test examples" ON)
-
-crave_find_or_fetch_boost()
 
 if(WITH_SYSTEMC)
     crave_find_or_fetch_systemc()

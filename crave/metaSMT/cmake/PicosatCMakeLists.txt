@@ -48,7 +48,7 @@ include(CMakePackageConfigHelpers)
 set(picosat_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/picosat)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/picosat.h
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/picosat
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/picosat
 )
 install(TARGETS 
   picosat

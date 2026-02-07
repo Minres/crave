@@ -86,8 +86,6 @@ Configure with a preset, then build and install. The build directory is `build/<
   pip install toml
   ```
 
-* The install prefix is set by the presets (currently `/tmp/crave2uvm_install`). Override it with `-DCMAKE_INSTALL_PREFIX=<DIR>` if needed.
-
 ### Running Tests
 
 Tests are registered in subdirectories of the build directory.
@@ -95,6 +93,7 @@ Tests are registered in subdirectories of the build directory.
 ```sh
 ctest --test-dir build/ALL/crave/tests
 ctest --test-dir build/ALL/crave/metaSMT/tests
+ctest --test-dir build/ALL/crave/examples
 ```
 
 ## Tested OS

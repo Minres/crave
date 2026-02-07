@@ -20,7 +20,7 @@ include(CMakePackageConfigHelpers)
 set(aiger_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/aiger)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/aiger.h
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/aiger
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/aiger
 )
 install(TARGETS aiger EXPORT aiger-targets)
 

@@ -59,7 +59,7 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/code/lglcfg.h
     ${CMAKE_CURRENT_SOURCE_DIR}/code/lglcflags.h
     ${CMAKE_CURRENT_SOURCE_DIR}/code/lgldimacs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/code/lglib.h
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/lingeling
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/lingeling
 )
 install(TARGETS 
   lingeling

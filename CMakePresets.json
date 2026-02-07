@@ -15,7 +15,7 @@
           "CMAKE_CXX_STANDARD": "17",
           "WITH_SYSTEMC": "ON",
           "CMAKE_BUILD_TYPE": "Release",
-          "CMAKE_INSTALL_PREFIX": "/tmp/crave2uvm_install",
+          "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/${presetName}/install",
           "metaSMT_USE_CUDD": "ON",
           "metaSMT_USE_Z3": "ON",
           "metaSMT_USE_YICES2": "OFF",

@@ -33,6 +33,7 @@ option(FETCH_UVM_SC "Force download/build of UVM-SystemC, ignoring system instal
 set(CRAVE_DEPS_PREFIX "${CMAKE_BINARY_DIR}/_deps/install" CACHE PATH "Prefix for fetched dependencies")
 include(${PROJECT_SOURCE_DIR}/cmake/CraveDeps.cmake)
 
+crave_find_or_fetch_boost()
 crave_find_or_fetch_systemc()
 crave_find_or_fetch_uvm_systemc()
 
@@ -56,21 +57,15 @@ target_include_directories(crave2uvm INTERFACE
 )
 target_link_libraries(crave2uvm INTERFACE crave)
 
-# Set the default installation directory to the build directory
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Default installation directory" FORCE)
-endif()
-
 include(GNUInstallDirs)
 install(TARGETS crave2uvm EXPORT crave2uvm-targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/crave2uvm
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/include/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/crave2uvm
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/crave2uvm
     FILES_MATCHING PATTERN "*.h"
 )
 

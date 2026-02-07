@@ -63,8 +63,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules )
 
 set(Boost_NO_BOOST_CMAKE true)
 set(Boost_NO_SYSTEM_PATHS true)
-if(NOT TARGET Boost::system AND NOT TARGET Boost::filesystem)
-  find_package(Boost REQUIRED)
+if(NOT TARGET Boost::system OR NOT TARGET Boost::filesystem OR NOT TARGET Boost::unit_test_framework)
+  message(FATAL_ERROR "Boost targets are missing. Ensure crave_find_or_fetch_boost() ran before configuring metaSMT.")
 endif()
 
 # From v1.57.0 Boost.Any does not require RTTI
