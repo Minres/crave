@@ -16,6 +16,8 @@
           "WITH_SYSTEMC": "ON",
           "CMAKE_BUILD_TYPE": "Release",
           "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/${presetName}/install",
+          "SYSTEMC_VERSION": "2.3.4",
+          "UVM_SYSTEMC_VERSION": "1.0-beta4",
           "metaSMT_USE_CUDD": "ON",
           "metaSMT_USE_Z3": "ON",
           "metaSMT_USE_YICES2": "OFF",
