@@ -214,7 +214,7 @@ function(crave_find_or_fetch_uvm_systemc)
         URL ${UVM_SYSTEMC_URL}
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         CONFIGURE_COMMAND <SOURCE_DIR>/config/bootstrap
-        COMMAND <SOURCE_DIR>/configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=${CRAVE_DEPS_PREFIX} --prefix=${CRAVE_DEPS_PREFIX} --libdir=${CRAVE_DEPS_LIBDIR}
+        COMMAND ${CMAKE_COMMAND} -E env CXXFLAGS=-std=c++${CMAKE_CXX_STANDARD} <SOURCE_DIR>/configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=${CRAVE_DEPS_PREFIX} --prefix=${CRAVE_DEPS_PREFIX} --libdir=${CRAVE_DEPS_LIBDIR}
         BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
         INSTALL_COMMAND make install
         BUILD_BYPRODUCTS "${CRAVE_DEPS_LIBDIR}/libuvm-systemc.a"
