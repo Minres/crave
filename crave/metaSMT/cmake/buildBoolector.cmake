@@ -5,6 +5,8 @@ endif()
 
 file(MAKE_DIRECTORY "${install_dir}/include")
 file(MAKE_DIRECTORY "${install_dir}/lib")
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 ExternalProject_Add(boolector_ext
   GIT_REPOSITORY https://github.com/Boolector/boolector.git
@@ -27,5 +29,32 @@ set_target_properties(Boolector::boolector PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
 )
 add_dependencies(Boolector::boolector boolector_ext)
+
+set(boolector_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/boolector)
+set(SOLVER_TARGET "Boolector::boolector")
+set(SOLVER_VARNAME "Boolector")
+set(SOLVER_LIBNAME "libboolector.so")
+set(SOLVER_LIBDIR "lib")
+set(SOLVER_INCLUDEDIR "include")
+set(SOLVER_FIND_DEPS "")
+set(SOLVER_SET_LINK_LIBS "")
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/boolector-config-version.cmake
+    VERSION 3.2.3
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/solver-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/boolector-config.cmake
+    INSTALL_DESTINATION ${boolector_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/boolector-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/boolector-config-version.cmake
+    DESTINATION ${boolector_CMAKE_CONFIG_DIR}
+)
 
 message(STATUS "Use Boolector ${Boolector_VERSION} from ${install_dir}")

@@ -113,7 +113,7 @@ if(metaSMT_USE_CUDD)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DmetaSMT_USE_CUDD)
 endif()
 
-target_link_libraries (${PROJECT_NAME} PUBLIC metaSMT Boost::filesystem)
+target_link_libraries(${PROJECT_NAME} PUBLIC metaSMT::metaSMT Boost::filesystem)
 if(WITH_SYSTEMC)
   target_link_libraries (${PROJECT_NAME} PUBLIC SystemC::systemc Threads::Threads)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DWITH_SYSTEMC)

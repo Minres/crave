@@ -6,6 +6,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 set(CUDD_LIBDIR "${install_dir}/${CMAKE_INSTALL_LIBDIR}")
 
 file(MAKE_DIRECTORY "${install_dir}/include")
@@ -23,12 +24,39 @@ ExternalProject_Add(cudd_ext
     BUILD_BYPRODUCTS ${CUDD_LIBDIR}/libcudd.a
 )
 
-add_library(cudd UNKNOWN IMPORTED)
-set_target_properties(cudd PROPERTIES
+add_library(cudd::cudd UNKNOWN IMPORTED)
+set_target_properties(cudd::cudd PROPERTIES
     IMPORTED_LOCATION ${CUDD_LIBDIR}/libcudd.a
     INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
 )
-add_dependencies(cudd cudd_ext)
-add_library(cudd::cudd ALIAS cudd)
+add_dependencies(cudd::cudd cudd_ext)
+add_library(cudd ALIAS cudd::cudd)
+
+set(cudd_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/cudd)
+set(SOLVER_TARGET "cudd::cudd")
+set(SOLVER_VARNAME "cudd")
+set(SOLVER_LIBNAME "libcudd.a")
+set(SOLVER_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+set(SOLVER_INCLUDEDIR "include")
+set(SOLVER_FIND_DEPS "")
+set(SOLVER_SET_LINK_LIBS "")
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config-version.cmake
+    VERSION 3.0.0
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/solver-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config.cmake
+    INSTALL_DESTINATION ${cudd_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cudd-config-version.cmake
+    DESTINATION ${cudd_CMAKE_CONFIG_DIR}
+)
 
 message(STATUS "Use CUDD 3.0.0 from ${install_dir}")

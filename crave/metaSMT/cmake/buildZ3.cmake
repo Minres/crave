@@ -1,4 +1,6 @@
 include(ExternalProject)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 set(install_dir ${CMAKE_INSTALL_PREFIX})
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -42,5 +44,32 @@ if(OPENMP_FOUND)
 endif()
 set_property(TARGET z3::z3 APPEND PROPERTY INTERFACE_LINK_LIBRARIES Threads::Threads)
 add_dependencies(z3::z3 z3_ext)
+
+set(z3_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/z3)
+set(SOLVER_TARGET "z3::z3")
+set(SOLVER_VARNAME "z3")
+set(SOLVER_LIBNAME "libz3.a")
+set(SOLVER_LIBDIR "lib")
+set(SOLVER_INCLUDEDIR "include")
+set(SOLVER_FIND_DEPS "find_dependency(Threads)\nfind_dependency(OpenMP QUIET)")
+set(SOLVER_SET_LINK_LIBS "set_property(TARGET z3::z3 APPEND PROPERTY INTERFACE_LINK_LIBRARIES Threads::Threads)\nif(TARGET OpenMP::OpenMP_CXX)\n    set_property(TARGET z3::z3 APPEND PROPERTY INTERFACE_LINK_LIBRARIES OpenMP::OpenMP_CXX)\nendif()")
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/z3-config-version.cmake
+    VERSION 4.6.0
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/solver-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/z3-config.cmake
+    INSTALL_DESTINATION ${z3_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/z3-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/z3-config-version.cmake
+    DESTINATION ${z3_CMAKE_CONFIG_DIR}
+)
 
 message(STATUS "Use Z3 4.6.0 from ${install_dir}")

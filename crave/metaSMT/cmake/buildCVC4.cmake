@@ -7,6 +7,8 @@ endif()
 
 file(MAKE_DIRECTORY "${install_dir}/include")
 file(MAKE_DIRECTORY "${install_dir}/lib")
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 ExternalProject_Add(cvc4_ext
   GIT_REPOSITORY https://github.com/CVC4/CVC4-archived.git
@@ -30,5 +32,32 @@ set_target_properties(CVC4::cvc4 PROPERTIES
   INTERFACE_LINK_LIBRARIES gmp::gmp
 )
 add_dependencies(CVC4::cvc4 cvc4_ext)
+
+set(cvc4_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/cvc4)
+set(SOLVER_TARGET "CVC4::cvc4")
+set(SOLVER_VARNAME "CVC4")
+set(SOLVER_LIBNAME "libcvc4.so.7")
+set(SOLVER_LIBDIR "lib")
+set(SOLVER_INCLUDEDIR "include")
+set(SOLVER_FIND_DEPS "find_dependency(gmp)")
+set(SOLVER_SET_LINK_LIBS "set_property(TARGET CVC4::cvc4 APPEND PROPERTY INTERFACE_LINK_LIBRARIES gmp::gmp)")
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/cvc4-config-version.cmake
+    VERSION 1.8
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/solver-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cvc4-config.cmake
+    INSTALL_DESTINATION ${cvc4_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cvc4-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cvc4-config-version.cmake
+    DESTINATION ${cvc4_CMAKE_CONFIG_DIR}
+)
 
 message(STATUS "Use CVC4 1.8 from ${install_dir}")

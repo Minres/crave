@@ -36,9 +36,13 @@ if(NOT TARGET gmp::gmp)
     include(GNUInstallDirs)
     include(CMakePackageConfigHelpers)
     set(gmp_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/gmp)
-
-    install(TARGETS gmp EXPORT gmp-targets)
-    install(EXPORT gmp-targets DESTINATION ${gmp_CMAKE_CONFIG_DIR})
+    set(SOLVER_TARGET "gmp::gmp")
+    set(SOLVER_VARNAME "gmp")
+    set(SOLVER_LIBNAME "libgmp.so")
+    set(SOLVER_LIBDIR "lib")
+    set(SOLVER_INCLUDEDIR "include")
+    set(SOLVER_FIND_DEPS "")
+    set(SOLVER_SET_LINK_LIBS "")
 
     write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/gmp-config-version.cmake
@@ -47,7 +51,7 @@ if(NOT TARGET gmp::gmp)
     )
 
     configure_package_config_file(
-        ${CMAKE_CURRENT_LIST_DIR}/gmp-config.cmake.in
+        ${CMAKE_CURRENT_LIST_DIR}/solver-config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/gmp-config.cmake
         INSTALL_DESTINATION ${gmp_CMAKE_CONFIG_DIR}
     )

@@ -6,6 +6,8 @@ set(MINISAT_INSTALL_DIR ${install_dir} CACHE PATH "minisat install prefix" FORCE
 
 file(MAKE_DIRECTORY "${install_dir}/include")
 file(MAKE_DIRECTORY "${install_dir}/lib")
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 ExternalProject_Add(minisat_ext
   GIT_REPOSITORY https://github.com/stp/minisat.git
@@ -23,5 +25,32 @@ set_target_properties(minisat PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
 )
 add_dependencies(minisat minisat_ext)
+
+set(minisat_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/minisat)
+set(SOLVER_TARGET "minisat")
+set(SOLVER_VARNAME "minisat")
+set(SOLVER_LIBNAME "libminisat.so")
+set(SOLVER_LIBDIR "lib")
+set(SOLVER_INCLUDEDIR "include")
+set(SOLVER_FIND_DEPS "")
+set(SOLVER_SET_LINK_LIBS "")
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/minisat-config-version.cmake
+    VERSION 0
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/solver-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/minisat-config.cmake
+    INSTALL_DESTINATION ${minisat_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/minisat-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/minisat-config-version.cmake
+    DESTINATION ${minisat_CMAKE_CONFIG_DIR}
+)
 
 message(STATUS "Use MiniSat from ${install_dir}")

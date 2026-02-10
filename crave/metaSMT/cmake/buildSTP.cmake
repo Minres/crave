@@ -1,5 +1,6 @@
 include(ExternalProject)
 include(FetchContent)
+include(CMakePackageConfigHelpers)
 
 set(HELP2MAN_INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -66,5 +67,32 @@ set_target_properties(stp PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${install_dir}/include
 )
 add_dependencies(stp stp_ext)
+
+set(stp_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/stp)
+set(SOLVER_TARGET "stp")
+set(SOLVER_VARNAME "stp")
+set(SOLVER_LIBNAME "libstp.so.2.3")
+set(SOLVER_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+set(SOLVER_INCLUDEDIR "include")
+set(SOLVER_FIND_DEPS "find_dependency(minisat)")
+set(SOLVER_SET_LINK_LIBS "set_property(TARGET stp APPEND PROPERTY INTERFACE_LINK_LIBRARIES minisat)")
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/stp-config-version.cmake
+    VERSION 2.3.4
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/solver-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/stp-config.cmake
+    INSTALL_DESTINATION ${stp_CMAKE_CONFIG_DIR}
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/stp-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/stp-config-version.cmake
+    DESTINATION ${stp_CMAKE_CONFIG_DIR}
+)
 
 message(STATUS "Use STP 2.3.4 from ${install_dir}")

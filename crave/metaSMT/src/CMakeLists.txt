@@ -26,6 +26,8 @@ add_library(metaSMT STATIC
   lib/_var_id.cpp
 )
 
+add_library(metaSMT::metaSMT ALIAS metaSMT)
+
 target_link_libraries(metaSMT PUBLIC ${metaSMT_LIBS})
 target_include_directories(metaSMT PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -84,6 +86,10 @@ if(metaSMT_USE_Boolector)
   endif()
 endif()
 
+if(TARGET gmp::gmp)
+  target_link_libraries(metaSMT PUBLIC gmp::gmp)
+endif()
+
 ### INSTALL
 include(GNUInstallDirs)
 install(TARGETS metaSMT EXPORT metasmt-targets
@@ -102,6 +108,7 @@ set(metaSMT_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/metaSMT)
 include(CMakePackageConfigHelpers)
 
 install(EXPORT metasmt-targets
+    NAMESPACE metaSMT::
     DESTINATION ${metaSMT_CMAKE_CONFIG_DIR}
 )
 
