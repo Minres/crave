@@ -75,6 +75,8 @@ add_library (${PROJECT_NAME}
   ${CRAVE_LIB_SRC}
 )
 
+add_library(crave::crave ALIAS ${PROJECT_NAME})
+
 if(NOT TARGET Boost::filesystem)
   message(FATAL_ERROR "Boost::filesystem target missing. Ensure crave_find_or_fetch_boost() ran before configuring crave.")
 endif()
@@ -136,6 +138,7 @@ set(CRAVE_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/crave)
 include(CMakePackageConfigHelpers)
 
 install(EXPORT crave-targets
+    NAMESPACE crave::
     DESTINATION ${CRAVE_CMAKE_CONFIG_DIR}
 )
 

@@ -55,7 +55,8 @@ target_include_directories(crave2uvm INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
     $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(crave2uvm INTERFACE crave)
+add_library(crave2uvm::crave2uvm ALIAS crave2uvm)
+target_link_libraries(crave2uvm INTERFACE crave::crave)
 
 include(GNUInstallDirs)
 install(TARGETS crave2uvm EXPORT crave2uvm-targets
@@ -73,6 +74,7 @@ set(CRAVE2UVM_CMAKE_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/crave2uvm)
 include(CMakePackageConfigHelpers)
 
 install(EXPORT crave2uvm-targets
+    NAMESPACE crave2uvm::
     DESTINATION ${CRAVE2UVM_CMAKE_CONFIG_DIR}
 )
 
