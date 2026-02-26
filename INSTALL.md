@@ -80,6 +80,7 @@ Configure with a preset, then build and install. The build directory is `build/<
 * Dependency resolution order: env var -> system search -> fetch/build.
 * To force downloading/building use `-DFETCH_ALL_DEPS=ON` or per-dependency flags:
   `-DFETCH_BOOST=ON`, `-DFETCH_SYSTEMC=ON`, `-DFETCH_UVM_SC=ON`.
+* When fetching UVM-SystemC, the tarball URL is controlled by `UVM_SYSTEMC_URL` (preset or `-DUVM_SYSTEMC_URL=...`).
 * For CVC4 support, ensure Python’s `toml` package is installed:
 
   ```sh

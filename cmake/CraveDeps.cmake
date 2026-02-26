@@ -204,14 +204,14 @@ function(crave_find_or_fetch_uvm_systemc)
         return()
     endif()
 
-    set(UVM_SYSTEMC_VERSION "${UVM_SYSTEMC_VERSION}" CACHE STRING "UVM-SystemC version to fetch")
-    if(NOT UVM_SYSTEMC_VERSION)
-        set(UVM_SYSTEMC_VERSION "1.0-beta4" CACHE STRING "UVM-SystemC version to fetch" FORCE)
+    # Explicit UVM-SystemC URL (can be overridden via presets).
+    set(UVM_SYSTEMC_URL "${UVM_SYSTEMC_URL}" CACHE STRING "UVM-SystemC tarball URL to fetch")
+    if(NOT UVM_SYSTEMC_URL)
+        set(UVM_SYSTEMC_URL "https://github.com/accellera-official/uvm-systemc/archive/refs/tags/1.0-beta4.tar.gz" CACHE STRING "UVM-SystemC tarball URL to fetch" FORCE)
     endif()
-    set(UVM_SYSTEMC_URL "https://www.accellera.org/images/downloads/standards/systemc/uvm-systemc-${UVM_SYSTEMC_VERSION}.tar.gz")
 
     ExternalProject_Add(uvm_systemc_ext
-        URL ${UVM_SYSTEMC_URL}
+        URL "${UVM_SYSTEMC_URL}"
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         CONFIGURE_COMMAND <SOURCE_DIR>/config/bootstrap
         COMMAND ${CMAKE_COMMAND} -E env CXXFLAGS=-std=c++${CMAKE_CXX_STANDARD} <SOURCE_DIR>/configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=${CRAVE_DEPS_PREFIX} --prefix=${CRAVE_DEPS_PREFIX} --libdir=${CRAVE_DEPS_LIBDIR}
@@ -238,5 +238,5 @@ function(crave_find_or_fetch_uvm_systemc)
     endif()
     install(FILES "${CRAVE_DEPS_LIBDIR}/libuvm-systemc.a" DESTINATION ${CMAKE_INSTALL_LIBDIR})
     install(DIRECTORY "${CRAVE_DEPS_PREFIX}/include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-    message(STATUS "UVM-SystemC: ${UVM_SYSTEMC_VERSION} @ ${UVM_SystemC_INCLUDE_DIRS}")
+    message(STATUS "UVM-SystemC: ${UVM_SYSTEMC_URL} @ ${UVM_SystemC_INCLUDE_DIRS}")
 endfunction()
