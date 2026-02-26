@@ -210,17 +210,30 @@ function(crave_find_or_fetch_uvm_systemc)
         set(UVM_SYSTEMC_URL "https://github.com/accellera-official/uvm-systemc/archive/refs/tags/1.0-beta4.tar.gz" CACHE STRING "UVM-SystemC tarball URL to fetch" FORCE)
     endif()
 
-    ExternalProject_Add(uvm_systemc_ext
-        URL "${UVM_SYSTEMC_URL}"
-        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-        CONFIGURE_COMMAND <SOURCE_DIR>/config/bootstrap
-        COMMAND ${CMAKE_COMMAND} -E env CXXFLAGS=-std=c++${CMAKE_CXX_STANDARD} <SOURCE_DIR>/configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=${CRAVE_DEPS_PREFIX} --prefix=${CRAVE_DEPS_PREFIX} --libdir=${CRAVE_DEPS_LIBDIR}
-        BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
-        INSTALL_COMMAND make install
-        BUILD_BYPRODUCTS "${CRAVE_DEPS_LIBDIR}/libuvm-systemc.a"
-        BUILD_IN_SOURCE 1
-        DEPENDS systemc_ext
-    )
+    if(DEFINED ENV{SYSTEMC_HOME})
+        ExternalProject_Add(uvm_systemc_ext
+            URL ${UVM_SYSTEMC_URL}
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+            CONFIGURE_COMMAND <SOURCE_DIR>/config/bootstrap
+            COMMAND ${CMAKE_COMMAND} -E env CXXFLAGS=-std=c++${CMAKE_CXX_STANDARD} <SOURCE_DIR>/configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=$ENV{SYSTEMC_HOME} --prefix=${CRAVE_DEPS_PREFIX} --libdir=${CRAVE_DEPS_LIBDIR}
+            BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
+            INSTALL_COMMAND make install
+            BUILD_BYPRODUCTS "${CRAVE_DEPS_LIBDIR}/libuvm-systemc.a"
+            BUILD_IN_SOURCE 1
+        )
+    else()
+        ExternalProject_Add(uvm_systemc_ext
+            URL ${UVM_SYSTEMC_URL}
+            DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+            CONFIGURE_COMMAND <SOURCE_DIR>/config/bootstrap
+            COMMAND ${CMAKE_COMMAND} -E env CXXFLAGS=-std=c++${CMAKE_CXX_STANDARD} <SOURCE_DIR>/configure --enable-debug --enable-shared=no --with-layout=unix --with-systemc=${CRAVE_DEPS_PREFIX} --prefix=${CRAVE_DEPS_PREFIX} --libdir=${CRAVE_DEPS_LIBDIR}
+            BUILD_COMMAND make -j${CRAVE_BUILD_JOBS}
+            INSTALL_COMMAND make install
+            BUILD_BYPRODUCTS "${CRAVE_DEPS_LIBDIR}/libuvm-systemc.a"
+            BUILD_IN_SOURCE 1
+           DEPENDS systemc_ext
+        )
+    endif()
 
     file(MAKE_DIRECTORY "${CRAVE_DEPS_PREFIX}/include")
     set(UVM_SystemC_FOUND TRUE CACHE BOOL "" FORCE)
