@@ -12,9 +12,16 @@ set(CUDD_LIBDIR "${install_dir}/${CMAKE_INSTALL_LIBDIR}")
 file(MAKE_DIRECTORY "${install_dir}/include")
 file(MAKE_DIRECTORY "${CUDD_LIBDIR}")
 
-ExternalProject_Add(cudd_ext
+set(CUDD_SOURCE_ARGS
     GIT_REPOSITORY https://github.com/nbruns1/cudd.git
     GIT_TAG cudd-3.0.0
+)
+
+# Resolve local source if in offline mode
+metasmt_resolve_local_source(cudd CUDD_SOURCE_ARGS)
+
+ExternalProject_Add(cudd_ext
+    ${CUDD_SOURCE_ARGS}
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND bash -c "touch configure.ac aclocal.m4 configure Makefile.am Makefile.in && ./configure --enable-obj --enable-dddmp --prefix=${install_dir} --libdir=${CUDD_LIBDIR}"
@@ -22,7 +29,11 @@ ExternalProject_Add(cudd_ext
     INSTALL_COMMAND make install
     BUILD_IN_SOURCE 1
     BUILD_BYPRODUCTS ${CUDD_LIBDIR}/libcudd.a
+    STEP_TARGETS download
 )
+
+# Register for export if in online mode
+metasmt_register_dep_for_export(cudd cudd_ext)
 
 add_library(cudd::cudd UNKNOWN IMPORTED)
 set_target_properties(cudd::cudd PROPERTIES
