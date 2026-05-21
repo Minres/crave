@@ -40,6 +40,8 @@ macro(metasmt_register_dep_for_export name target)
         add_custom_command(TARGET metasmt-export-deps-stage POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory "${METASMT_EXPORT_STAGING_DIR}/${name}"
             COMMAND ${CMAKE_COMMAND} -E copy_directory "${SOURCE_DIR}" "${METASMT_EXPORT_STAGING_DIR}/${name}"
+            # Drop top-level Git metadata to keep the export bundle small and source-only.
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "${METASMT_EXPORT_STAGING_DIR}/${name}/.git"
             COMMENT "Staging ${name} source for export from ${SOURCE_DIR}"
         )
     endif()

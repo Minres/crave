@@ -20,10 +20,12 @@ metasmt_resolve_local_source(minisat MINISAT_SOURCE_ARGS)
 ExternalProject_Add(minisat_ext
   ${MINISAT_SOURCE_ARGS}
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  UPDATE_COMMAND ""
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${install_dir}
   BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --parallel ${CRAVE_BUILD_JOBS}
   INSTALL_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --target install
   BUILD_BYPRODUCTS ${install_dir}/lib/libminisat.so
+  STEP_TARGETS download
 )
 
 # Register for export if in online mode
