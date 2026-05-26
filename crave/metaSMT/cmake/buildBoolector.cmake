@@ -75,12 +75,10 @@ if(NOT METASMT_DEPS_DIR)
   ExternalProject_Get_Property(boolector_lingeling_export_src SOURCE_DIR)
   set(BOOLECTOR_LINGELING_EXPORT_SOURCE_DIR "${SOURCE_DIR}")
 
-  add_dependencies(metasmt-export-deps-stage
-    boolector_export_src-download
-    boolector_btor2tools_export_src-download
-    boolector_cadical_export_src-download
-    boolector_lingeling_export_src-download
-  )
+  metasmt_export_depends_on(boolector_export_src-download)
+  metasmt_export_depends_on(boolector_btor2tools_export_src-download)
+  metasmt_export_depends_on(boolector_cadical_export_src-download)
+  metasmt_export_depends_on(boolector_lingeling_export_src-download)
 
   # Stage Boolector export sources directly so no helper step builds libraries.
   add_custom_command(TARGET metasmt-export-deps-stage POST_BUILD
