@@ -75,6 +75,27 @@ Configure with a preset, then build and install. The build directory is `build/<
     cmake --build --preset ALL --target install
     ```
 
+### Offline metaSMT Build
+
+The metaSMT solver backends can be prepared on an online machine and then reused in an offline environment through `METASMT_DEPS_DIR`.
+Run `metasmt-export-deps` once online to create `metasmt-deps.tar.gz`, unpack that archive on the offline machine, and configure the same preset again with `-DMETASMT_DEPS_DIR=<unpacked bundle>`.
+
+Example:
+
+```sh
+cmake --preset ALL
+cmake --build build/ALL --target metasmt-export-deps
+
+mkdir offline_deps
+tar xzf build/ALL/metasmt-deps.tar.gz -C offline_deps
+
+cmake --preset ALL -DMETASMT_DEPS_DIR="$(realpath offline_deps)"
+cmake --build build/ALL --target install
+```
+
+When `METASMT_DEPS_DIR` is set, all enabled metaSMT backends must be present in that directory and no backend downloads are attempted. The bundle also contains required internal build dependencies such as `help2man`, `gperf`, `boolector-*`, and `cvc4-antlr`.
+
+
 ### Notes
 
 * Dependency resolution order: env var -> system search -> fetch/build.
