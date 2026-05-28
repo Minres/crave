@@ -1,13 +1,8 @@
-FetchContent_Declare(
-    aiger_repo
+set(AIGER_SOURCE_ARGS
     URL https://fmv.jku.at/aiger/aiger-20071012.zip
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
-FetchContent_GetProperties(aiger_repo)
 
-if(NOT aiger_repo_POPULATED)
-    FetchContent_Populate(aiger_repo)
-endif()
+metasmt_populate_fetchcontent(aiger aiger_repo AIGER_SOURCE_ARGS aiger_repo_SOURCE_DIR)
 
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/AigerCMakeLists.txt CMakeLists.txt

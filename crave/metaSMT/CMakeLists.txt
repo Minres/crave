@@ -102,6 +102,11 @@ option(metaSMT_USE_lingeling  "try to use lingeling SAT solver" on)
 option(metaSMT_USE_Aiger      "try to use aiger" on)
 option(metaSMT_USE_CW         "try to use clause writers" on)
 
+set(METASMT_DEPS_DIR "" CACHE PATH "Path to an unpacked metaSMT offline dependency bundle.")
+
+# Source-resolution and export helpers for metaSMT dependencies
+include(cmake/MetaSMT_deps.cmake)
+
 option(metaSMT_DOC_Doxygen    "try to build doxygen documentation" off)
 option(metaSMT_ENABLE_TESTS   "build tests (recommended)" on)
 

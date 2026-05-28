@@ -1,13 +1,8 @@
-FetchContent_Declare(
-    lingeling_repo
+set(LINGELING_SOURCE_ARGS
     URL https://fmv.jku.at/lingeling/lingeling-ayv-86bf266-140429.zip
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
-FetchContent_GetProperties(lingeling_repo)
 
-if(NOT lingeling_repo_POPULATED)
-    FetchContent_Populate(lingeling_repo)
-endif()
+metasmt_populate_fetchcontent(lingeling lingeling_repo LINGELING_SOURCE_ARGS lingeling_repo_SOURCE_DIR)
 
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/LingelingCMakeLists.txt CMakeLists.txt

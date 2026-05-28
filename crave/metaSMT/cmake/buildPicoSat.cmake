@@ -1,13 +1,8 @@
-FetchContent_Declare(
-    picosat_repo
+set(PICOSAT_SOURCE_ARGS
     URL https://fmv.jku.at/picosat/picosat-965.tar.gz
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
-FetchContent_GetProperties(picosat_repo)
 
-if(NOT picosat_repo_POPULATED)
-    FetchContent_Populate(picosat_repo)
-endif()
+metasmt_populate_fetchcontent(picosat picosat_repo PICOSAT_SOURCE_ARGS picosat_repo_SOURCE_DIR)
 
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/PicosatCMakeLists.txt CMakeLists.txt

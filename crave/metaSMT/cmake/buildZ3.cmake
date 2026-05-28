@@ -21,9 +21,16 @@ else()
   message(STATUS "Use Z3 without OpenMP")
 endif()
 
-ExternalProject_Add(z3_ext
+set(Z3_SOURCE_ARGS
     GIT_REPOSITORY https://github.com/Z3Prover/z3.git
     GIT_TAG z3-4.6.0
+)
+
+# Resolve local source if in offline mode
+metasmt_resolve_local_source(z3 Z3_SOURCE_ARGS)
+
+ExternalProject_Add(z3_ext
+    ${Z3_SOURCE_ARGS}
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     UPDATE_COMMAND ""
     PATCH_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> git apply -p0 ${CMAKE_CURRENT_LIST_DIR}/z3-z3-4.6.0__permutation_matrix.patch
@@ -32,7 +39,11 @@ ExternalProject_Add(z3_ext
     INSTALL_COMMAND make -C build install
     BUILD_IN_SOURCE 1
     BUILD_BYPRODUCTS ${Z3_LIBDIR}/libz3.a
+    STEP_TARGETS download
 )
+
+# Register for export if in online mode
+metasmt_register_dep_for_export(z3 z3_ext)
 
 add_library(z3::z3 UNKNOWN IMPORTED)
 set_target_properties(z3::z3 PROPERTIES

@@ -9,15 +9,27 @@ file(MAKE_DIRECTORY "${install_dir}/lib")
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+set(MINISAT_SOURCE_ARGS
+    GIT_REPOSITORY https://github.com/stp/minisat.git
+    GIT_TAG 14c78206cd12d1d36b7e042fa758747c135670a4
+)
+
+# Resolve local source if in offline mode
+metasmt_resolve_local_source(minisat MINISAT_SOURCE_ARGS)
+
 ExternalProject_Add(minisat_ext
-  GIT_REPOSITORY https://github.com/stp/minisat.git
-  GIT_TAG 14c78206cd12d1d36b7e042fa758747c135670a4
+  ${MINISAT_SOURCE_ARGS}
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  UPDATE_COMMAND ""
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${install_dir}
   BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --parallel ${CRAVE_BUILD_JOBS}
   INSTALL_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --target install
   BUILD_BYPRODUCTS ${install_dir}/lib/libminisat.so
+  STEP_TARGETS download
 )
+
+# Register for export if in online mode
+metasmt_register_dep_for_export(minisat minisat_ext)
 
 add_library(minisat UNKNOWN IMPORTED)
 set_target_properties(minisat PROPERTIES
