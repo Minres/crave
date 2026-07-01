@@ -7,8 +7,8 @@
     },
     "configurePresets": [
       {
-        "name": "CUDD-Z3",
-        "description": "Minimal CRAVE setup with CUDD and Z3",
+        "name": "Default",
+        "description": "Default configuration with CUDD and Z3",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/build/${presetName}",
         "cacheVariables": {
@@ -30,18 +30,18 @@
         }
       },
       {
-        "name": "CUDD-Z3-SC3",
-        "inherits": "CUDD-Z3",
-        "description": "CUDD+Z3 with SystemC 3.0.1 and UVM-SystemC 1.0.6 (beta6 tarball)",
+        "name": "Default-SC3",
+        "inherits": "Default",
+        "description": "Default configuration with CUDD, Z3, SystemC 3.0.1, and UVM-SystemC 1.0.6 (beta6 tarball)",
         "cacheVariables": {
           "SYSTEMC_VERSION": "3.0.1",
           "UVM_SYSTEMC_URL": "https://github.com/accellera-official/uvm-systemc/archive/refs/tags/1.0-beta6.tar.gz"
         }
       },
       {
-        "name": "ALL",
-        "inherits": "CUDD-Z3",
-        "description": "CRAVE setup with all SMTs",
+        "name": "All",
+        "inherits": "Default",
+        "description": "Default configuration plus all optional metaSMT solver backends",
         "cacheVariables": {
           "metaSMT_USE_YICES2": "ON",
           "metaSMT_USE_Boolector": "ON",
@@ -54,9 +54,9 @@
         }
       },
       {
-        "name": "ALL-SC3",
-        "inherits": "CUDD-Z3-SC3",
-        "description": "All SMTs with SystemC 3.0.1 and UVM-SystemC 1.0.6 (beta6 tarball)",
+        "name": "All-SC3",
+        "inherits": "Default-SC3",
+        "description": "Default configuration plus all optional metaSMT solver backends, SystemC 3.0.1, and UVM-SystemC 1.0.6 (beta6 tarball)",
         "cacheVariables": {
           "metaSMT_USE_YICES2": "ON",
           "metaSMT_USE_Boolector": "ON",
@@ -71,23 +71,23 @@
     ],
     "buildPresets": [
       {
-        "name": "CUDD-Z3",
-        "configurePreset": "CUDD-Z3",
+        "name": "Default",
+        "configurePreset": "Default",
         "jobs": 32
       },
       {
-        "name": "CUDD-Z3-SC3",
-        "configurePreset": "CUDD-Z3-SC3",
+        "name": "Default-SC3",
+        "configurePreset": "Default-SC3",
         "jobs": 32
       },
       {
-        "name": "ALL",
-        "configurePreset": "ALL",
+        "name": "All",
+        "configurePreset": "All",
         "jobs": 32
       },
       {
-        "name": "ALL-SC3",
-        "configurePreset": "ALL-SC3",
+        "name": "All-SC3",
+        "configurePreset": "All-SC3",
         "jobs": 32
       }
     ]

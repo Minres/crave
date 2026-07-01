@@ -31,25 +31,27 @@ Configure with a preset, then build and install. The build directory is `build/<
 
 ### Usage Examples
 
-* **Minimal setup (CUDD and Z3):**
+The default configuration enables CUDD and Z3. Additional metaSMT solver backends are optional and can be enabled with the `All` preset.
+
+* **Default configuration (CUDD and Z3):**
 
   ```sh
-  cmake --preset CUDD-Z3
-  cmake --build --preset CUDD-Z3 --target install
+  cmake --preset Default
+  cmake --build --preset Default --target install
   ```
 
-* **Full setup (all SMTs):**
+* **Default configuration plus optional solvers (all available metaSMT backends):**
 
   ```sh
-  cmake --preset ALL
-  cmake --build --preset ALL --target install
+  cmake --preset All
+  cmake --build --preset All --target install
   ```
 
-* **Complete setup (all SMTs) including fetching Boost, SystemC, and UVM-SystemC:**
+* **Default configuration plus optional solvers, including fetching Boost, SystemC, and UVM-SystemC:**
 
   ```sh
-  cmake --preset ALL -DFETCH_ALL_DEPS=ON
-  cmake --build --preset ALL --target install
+  cmake --preset All -DFETCH_ALL_DEPS=ON
+  cmake --build --preset All --target install
   ```
 
 * **Fetch prerequisites selectively:**
@@ -57,22 +59,22 @@ Configure with a preset, then build and install. The build directory is `build/<
   * Fetch only Boost, use system SystemC/UVM-SystemC:
 
     ```sh
-    cmake --preset ALL -DFETCH_BOOST=ON
-    cmake --build --preset ALL --target install
+    cmake --preset All -DFETCH_BOOST=ON
+    cmake --build --preset All --target install
     ```
 
   * Fetch only SystemC and UVM-SystemC, use system Boost:
 
     ```sh
-    cmake --preset ALL -DFETCH_SYSTEMC=ON -DFETCH_UVM_SC=ON
-    cmake --build --preset ALL --target install
+    cmake --preset All -DFETCH_SYSTEMC=ON -DFETCH_UVM_SC=ON
+    cmake --build --preset All --target install
     ```
 
   * Fetch only UVM-SystemC (use system Boost and SystemC):
 
     ```sh
-    cmake --preset ALL -DFETCH_UVM_SC=ON
-    cmake --build --preset ALL --target install
+    cmake --preset All -DFETCH_UVM_SC=ON
+    cmake --build --preset All --target install
     ```
 
 ### Offline metaSMT Build
@@ -83,14 +85,14 @@ Run `metasmt-export-deps` once online to create `metasmt-deps.tar.gz`, unpack th
 Example:
 
 ```sh
-cmake --preset ALL
-cmake --build build/ALL --target metasmt-export-deps
+cmake --preset All
+cmake --build build/All --target metasmt-export-deps
 
 mkdir offline_deps
-tar xzf build/ALL/metasmt-deps.tar.gz -C offline_deps
+tar xzf build/All/metasmt-deps.tar.gz -C offline_deps
 
-cmake --preset ALL -DMETASMT_DEPS_DIR="$(realpath offline_deps)"
-cmake --build build/ALL --target install
+cmake --preset All -DMETASMT_DEPS_DIR="$(realpath offline_deps)"
+cmake --build build/All --target install
 ```
 
 When `METASMT_DEPS_DIR` is set, all enabled metaSMT backends must be present in that directory and no backend downloads are attempted. The bundle also contains required internal build dependencies such as `help2man`, `gperf`, `boolector-*`, and `cvc4-antlr`.
@@ -113,9 +115,9 @@ When `METASMT_DEPS_DIR` is set, all enabled metaSMT backends must be present in 
 Tests are registered in subdirectories of the build directory.
 
 ```sh
-ctest --test-dir build/ALL/crave/tests
-ctest --test-dir build/ALL/crave/metaSMT/tests
-ctest --test-dir build/ALL/crave/examples
+ctest --test-dir build/All/crave/tests
+ctest --test-dir build/All/crave/metaSMT/tests
+ctest --test-dir build/All/crave/examples
 ```
 
 ## Tested OS
